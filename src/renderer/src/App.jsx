@@ -18,7 +18,7 @@ const { isDev } = window;
 // eslint-disable-next-line unicorn/prefer-global-this
 const electron = window.require('@electron/remote');
 
-const { initInstautoDb, initInstauto, runBotNormalMode, runBotUnfollowAllUnknown, runBotUnfollowNonMutualFollowers, runBotUnfollowOldFollowed, runBotUnfollowUserList, runBotFollowUserList, cleanupInstauto, checkHaveCookies, deleteCookies, getInstautoData, runTestCode } = electron.require('./index.js');
+const { initInstautoDb, initInstauto, runBotNormalMode, runBotUnfollowNonMutualFollowers, runBotUnfollowOldFollowed, runBotUnfollowUserList, runBotFollowUserList, cleanupInstauto, checkHaveCookies, deleteCookies, getInstautoData, runTestCode } = electron.require('./index.js');
 const { store: configStore, defaults: configDefaults } = electron.require('./store.js');
 
 const ReactSwal = withReactContent(Swal);
@@ -520,10 +520,6 @@ const App = memo(() => {
     await startInstautoAction(async () => runBotUnfollowNonMutualFollowers());
   }, [startInstautoAction]);
 
-  const onUnfollowAllUnknownPress = useCallback(async () => {
-    await startInstautoAction(async () => runBotUnfollowAllUnknown());
-  }, [startInstautoAction]);
-
   const onUnfollowOldFollowedPress = useCallback(async () => {
     await startInstautoAction(async () => runBotUnfollowOldFollowed({ ageInDays: advancedSettings.dontUnfollowUntilDaysElapsed }));
   }, [advancedSettings.dontUnfollowUntilDaysElapsed, startInstautoAction]);
@@ -662,9 +658,6 @@ const App = memo(() => {
                 </Tooltip>
                 <Tooltip content={`Special mode of operation: Unfollow all accounts that are not following you back (except accounts that were followed by bot in the last ${advancedSettings.dontUnfollowUntilDaysElapsed} days)`}>
                   <Button height={30} type="button" onClick={onUnfollowNonMutualFollowersPress}>Unfollow non-mutual</Button>
-                </Tooltip>
-                <Tooltip content="Special mode of operation: Unfollow all unknown accounts (meaning unfollow all accounts that you are following, except any accounts that have been previously followed by the bot)">
-                  <Button height={30} type="button" onClick={onUnfollowAllUnknownPress}>Unfollow unknown</Button>
                 </Tooltip>
                 <Tooltip content="Special mode of operation: Unfollow a comma separated list of accounts that you specify">
                   <Button height={30} type="button" onClick={() => setUnfollowUserListDialogShown(true)}>Unfollow list...</Button>

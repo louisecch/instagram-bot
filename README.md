@@ -34,7 +34,7 @@ What makes it different from other bots?
 - Change browser signature to avoid being identified
 - Passes bot tests: https://intoli.com/blog/not-possible-to-block-chrome-headless/chrome-headless-test.html and https://arh.antoinevastel.com/bots/areyouheadless
 - Runs on all major desktop platforms
-- Multiple modes of operation: Unfollow only, Unfollow non-mutual followers, Unfollow unknown followed accounts, Unfollow user specified list of accounts.
+- Multiple modes of operation: Unfollow only, Unfollow non-mutual followers, Unfollow user specified list of accounts.
 
 ## Download
 

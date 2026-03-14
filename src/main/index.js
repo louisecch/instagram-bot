@@ -250,10 +250,6 @@ async function runBotNormalMode({
   }
 }
 
-async function runBotUnfollowAllUnknown({ limit } = {}) {
-  await instauto.unfollowAllUnknown({ limit });
-}
-
 async function runBotUnfollowNonMutualFollowers({ limit } = {}) {
   await instauto.unfollowNonMutualFollowers({ limit });
 }
@@ -338,7 +334,6 @@ const remoteApiLegacy = {
   initInstautoDb,
   getInstautoData,
   runBotNormalMode,
-  runBotUnfollowAllUnknown,
   runBotUnfollowNonMutualFollowers,
   runBotUnfollowOldFollowed,
   runBotUnfollowUserList,
