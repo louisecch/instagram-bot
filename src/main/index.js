@@ -141,14 +141,17 @@ async function initInstauto({
     x: 0,
     y: 0,
     webPreferences: {
-      partition: 'persist:instauto', // Persistent session to maintain device fingerprint
+      partition: 'instauto', // Use non-persistent partition for compatibility
       backgroundThrottling: false,
       webSecurity: true,
       contextIsolation: false,
     },
   });
 
-  console.log('Session partition:', instautoWindow.webContents.session.partition);
+  // Get the session for this partition
+  const { session } = instautoWindow.webContents;
+  
+  console.log('Session partition:', session.partition);
   console.log('Cookies path:', cookiesPath);
 
   const pieBrowser = await pieConnectPromise;
