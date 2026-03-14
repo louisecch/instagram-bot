@@ -83,14 +83,18 @@ async function deleteCookies() {
 async function initInstautoDb(usernameIn) {
   const username = usernameIn && filenamify(usernameIn);
   const followedDbPath = getFilePath(username ? `${username}-followed.json` : 'followed.json');
-  const unfollowedDbPath = getFilePath(username ? `${username}-unfollowed.json` : 'followed.json');
-  const likedPhotosDbPath = getFilePath(username ? `${username}-liked-photos.json` : 'followed.json');
+  const unfollowedDbPath = getFilePath(username ? `${username}-unfollowed.json` : 'unfollowed.json');
+  const likedPhotosDbPath = getFilePath(username ? `${username}-liked-photos.json` : 'liked-photos.json');
+
+  // Ensure the directory exists
+  const dataDir = customRootPath || app.getPath('userData');
+  await fs.ensureDir(dataDir);
 
   // Migrate any old paths if we have new version (with username) now:
   if (username) {
-    await fs.move(getFilePath('followed.json'), followedDbPath).catch();
-    await fs.move(getFilePath('unfollowed.json'), unfollowedDbPath).catch();
-    await fs.move(getFilePath('liked-photos.json'), likedPhotosDbPath).catch();
+    await fs.move(getFilePath('followed.json'), followedDbPath).catch(() => {});
+    await fs.move(getFilePath('unfollowed.json'), unfollowedDbPath).catch(() => {});
+    await fs.move(getFilePath('liked-photos.json'), likedPhotosDbPath).catch(() => {});
   }
 
   instautoDb = await JSONDB({
