@@ -142,6 +142,9 @@ async function initInstauto({
     },
   });
 
+  console.log('Session partition:', instautoWindow.webContents.session.partition);
+  console.log('Cookies path:', cookiesPath);
+
   const pieBrowser = await pieConnectPromise;
   const page = await pie.getPage(pieBrowser, instautoWindow);
 
