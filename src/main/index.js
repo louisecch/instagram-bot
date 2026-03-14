@@ -137,13 +137,10 @@ async function initInstauto({
     x: 0,
     y: 0,
     webPreferences: {
-      partition: 'instauto', // So that we have a separate session
+      partition: 'persist:instauto', // Persistent session to maintain device fingerprint
       backgroundThrottling: false,
     },
   });
-
-  const { session } = instautoWindow.webContents;
-  await session.clearStorageData(); // we store cookies etc separately
 
   const pieBrowser = await pieConnectPromise;
   const page = await pie.getPage(pieBrowser, instautoWindow);
