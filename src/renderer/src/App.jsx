@@ -48,6 +48,7 @@ const {
   runBotUnfollowOldFollowed,
   runBotUnfollowUserList,
   runBotFollowUserList,
+  runBotLikePhotosOnly,
   cleanupInstauto,
   checkHaveCookies,
   deleteCookies,
@@ -735,6 +736,17 @@ const App = memo(() => {
     [skipPrivate, startInstautoAction],
   );
 
+  const onLikePhotosOnlyPress = useCallback(
+    async () => {
+      await startInstautoAction(async () => runBotLikePhotosOnly({
+        usernames: cleanupAccounts(usersToFollowFollowersOf),
+        maxLikesPerUser: advancedSettings.maxLikesPerUser || 2,
+        skipPrivate,
+      }));
+    },
+    [advancedSettings.maxLikesPerUser, skipPrivate, startInstautoAction, usersToFollowFollowersOf],
+  );
+
   const onRunTestCode = useCallback(async () => {
     await startInstautoAction(async () => runTestCode());
   }, [startInstautoAction]);
@@ -1150,6 +1162,16 @@ const App = memo(() => {
                       style={styles.secondaryButton}
                     >
                       Follow List...
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Like photos only without following users">
+                    <Button
+                      height={44}
+                      type="button"
+                      onClick={onLikePhotosOnlyPress}
+                      style={styles.secondaryButton}
+                    >
+                      Like Photos Only
                     </Button>
                   </Tooltip>
                   {isDev && (

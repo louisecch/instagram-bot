@@ -92,9 +92,9 @@ async function initInstautoDb(usernameIn) {
 
   // Migrate any old paths if we have new version (with username) now:
   if (username) {
-    await fs.move(getFilePath('followed.json'), followedDbPath).catch(() => {});
-    await fs.move(getFilePath('unfollowed.json'), unfollowedDbPath).catch(() => {});
-    await fs.move(getFilePath('liked-photos.json'), likedPhotosDbPath).catch(() => {});
+    await fs.move(getFilePath('followed.json'), followedDbPath).catch(() => { /* ignore error */ });
+    await fs.move(getFilePath('unfollowed.json'), unfollowedDbPath).catch(() => { /* ignore error */ });
+    await fs.move(getFilePath('liked-photos.json'), likedPhotosDbPath).catch(() => { /* ignore error */ });
   }
 
   instautoDb = await JSONDB({
@@ -273,6 +273,19 @@ async function runBotFollowUserList({ users, limit, skipPrivate } = {}) {
   await instauto.safelyFollowUserList({ users, limit, skipPrivate });
 }
 
+async function runBotLikePhotosOnly({ usernames, maxLikesPerUser, skipPrivate } = {}) {
+  assert(instauto);
+
+  await instauto.followUsersFollowers({
+    usersToFollowFollowersOf: usernames,
+    maxFollowsTotal: 0,
+    skipPrivate,
+    enableLikeImages: true,
+    enableFollow: false,
+    likeImagesMax: maxLikesPerUser,
+  });
+}
+
 // for easier development testing
 async function runTestCode() {
   // console.log(await instauto.doesUserFollowMe('mifi.no'));
@@ -345,6 +358,7 @@ const remoteApiLegacy = {
   runBotUnfollowOldFollowed,
   runBotUnfollowUserList,
   runBotFollowUserList,
+  runBotLikePhotosOnly,
   runTestCode,
   cleanupInstauto,
   checkHaveCookies,
