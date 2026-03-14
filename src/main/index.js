@@ -143,6 +143,8 @@ async function initInstauto({
     webPreferences: {
       partition: 'persist:instauto', // Persistent session to maintain device fingerprint
       backgroundThrottling: false,
+      webSecurity: true,
+      contextIsolation: false,
     },
   });
 
@@ -151,6 +153,9 @@ async function initInstauto({
 
   const pieBrowser = await pieConnectPromise;
   const page = await pie.getPage(pieBrowser, instautoWindow);
+
+  // Wait a moment for the page to be fully ready
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   const options = {
     // Testing
@@ -183,7 +188,15 @@ async function initInstauto({
   mainWindow.focus();
 
   instauto = Instauto(instautoDb, page, options);
-  await instauto.init();
+  
+  try {
+    await instauto.init();
+  } catch (err) {
+    loggerArg.error('Failed to initialize instauto:', err.message);
+    loggerArg.error('This may be due to network interception issues with persistent sessions.');
+    throw err;
+  }
+  
   logger = loggerArg;
 
   powerSaveBlockerId = powerSaveBlocker.start('prevent-display-sleep');
