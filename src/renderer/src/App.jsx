@@ -46,33 +46,6 @@ function onTroubleshootingClick() {
 }
 
 // eslint-disable-next-line react/display-name
-const StatisticsBanner = memo(({ data: { numFollowedLastDay, numTotalFollowedUsers, numUnfollowedLastDay, numTotalUnfollowedUsers, numLikedLastDay, numTotalLikedPhotos } }) => {
-  const headingStyle = { marginBottom: 5, color: '#7c3c21' };
-  const statStyle = { minWidth: 30, paddingRight: 5, fontWeight: 400, fontSize: 24, color: '#303960' };
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div style={{ margin: 20 }}>
-        <div style={headingStyle}>Followed users</div>
-        <div style={{ display: 'flex', alignItems: 'center' }}><div style={statStyle}>{numFollowedLastDay}</div>Last 24h</div>
-        <div style={{ display: 'flex', alignItems: 'center' }}><div style={statStyle}>{numTotalFollowedUsers}</div>Total</div>
-      </div>
-
-      <div style={{ margin: 20 }}>
-        <div style={headingStyle}>Unfollowed users</div>
-        <div style={{ display: 'flex', alignItems: 'center' }}><div style={statStyle}>{numUnfollowedLastDay}</div>Last 24h</div>
-        <div style={{ display: 'flex', alignItems: 'center' }}><div style={statStyle}>{numTotalUnfollowedUsers}</div>Total</div>
-      </div>
-
-      <div style={{ margin: 20 }}>
-        <div style={headingStyle}>Liked photos</div>
-        <div style={{ display: 'flex', alignItems: 'center' }}><div style={statStyle}>{numLikedLastDay}</div>Last 24h</div>
-        <div style={{ display: 'flex', alignItems: 'center' }}><div style={statStyle}>{numTotalLikedPhotos}</div>Total</div>
-      </div>
-    </div>
-  );
-});
-
-// eslint-disable-next-line react/display-name
 const AdvancedSettings = memo(({
   advancedSettings, onChange, dryRun, setDryRun, instantStart, setInstantStart, onClose,
 }) => {
@@ -544,153 +517,379 @@ const App = memo(() => {
 
   const onDonateClick = () => electron.shell.openExternal('https://mifi.no/thanks');
 
+  const styles = {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%)',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
+    },
+    contentWrapper: {
+      flex: 1,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '40px 20px',
+    },
+    card: {
+      background: '#ffffff',
+      borderRadius: '20px',
+      boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
+      padding: '48px',
+      maxWidth: '880px',
+      width: '100%',
+    },
+    runningCard: {
+      background: '#ffffff',
+      borderRadius: '20px',
+      boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
+      padding: '48px',
+      maxWidth: '560px',
+      width: '100%',
+      textAlign: 'center',
+    },
+    title: {
+      fontSize: '34px',
+      fontWeight: '700',
+      letterSpacing: '-0.5px',
+      color: '#1d1d1f',
+      marginBottom: '12px',
+      lineHeight: '1.2',
+    },
+    subtitle: {
+      fontSize: '17px',
+      color: '#6e6e73',
+      marginBottom: '32px',
+      lineHeight: '1.5',
+    },
+    sectionTitle: {
+      fontSize: '20px',
+      fontWeight: '600',
+      color: '#1d1d1f',
+      marginBottom: '16px',
+      marginTop: '32px',
+    },
+    primaryButton: {
+      minHeight: '48px',
+      fontSize: '17px',
+      fontWeight: '500',
+      borderRadius: '12px',
+      padding: '0 32px',
+      marginTop: '24px',
+    },
+    secondaryButton: {
+      minHeight: '44px',
+      fontSize: '15px',
+      borderRadius: '10px',
+      margin: '8px 6px',
+    },
+    inputField: {
+      marginBottom: '20px',
+    },
+    checkboxWrapper: {
+      margin: '16px 0',
+      padding: '12px',
+      background: '#f5f5f7',
+      borderRadius: '12px',
+    },
+    infoBox: {
+      background: '#f5f5f7',
+      borderRadius: '12px',
+      padding: '20px',
+      marginTop: '24px',
+      fontSize: '15px',
+      lineHeight: '1.6',
+      color: '#1d1d1f',
+    },
+    statsContainer: {
+      display: 'flex',
+      justifyContent: 'space-around',
+      marginTop: '32px',
+      padding: '24px',
+      background: '#f5f5f7',
+      borderRadius: '16px',
+    },
+    statItem: {
+      textAlign: 'center',
+    },
+    statNumber: {
+      fontSize: '32px',
+      fontWeight: '700',
+      color: '#007aff',
+      lineHeight: '1',
+    },
+    statLabel: {
+      fontSize: '13px',
+      color: '#6e6e73',
+      marginTop: '8px',
+      fontWeight: '500',
+    },
+    footer: {
+      textAlign: 'center',
+      padding: '24px',
+      fontSize: '13px',
+      color: '#6e6e73',
+    },
+  };
+
   return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div>
-          {running ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: 500 }}>
-              <Lottie
-                loop
-                play={shouldPlayAnimations}
-                animationData={runningLottie}
-                style={{ maxWidth: 150, width: '100%' }}
-              />
-
-              <div style={{ fontSize: 27, marginBottom: 20 }}>Your bot is running</div>
-
-              <div>
-                <p>Leave the app running on your computer and keep it connected to power and prevent it from sleeping and the bot will work for you while you are doing more useful things.</p>
-                <p>Please don&apos;t close/minimize the other window <span role="img" aria-label="Robot">🤖</span></p>
-              </div>
-
-              <div style={{ marginBottom: 20 }}>
-                <b>No ads. No tracking. Just open source love.</b><br />
-                I built this for free for everyone to enjoy, but it needs constant updates to make sure it works whenever Instagram changes something.<br />
-                <div role="button" tabIndex="0" style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.6)', fontWeight: 'bold' }} onClick={onDonateClick}>❤️ Consider supporting my work</div>
-              </div>
-
-              <LogView fontSize={10} logs={logs} />
-            </div>
-          ) : (
-            <div style={{ maxWidth: 800 }}>
-              <div style={{ display: 'flex' }}>
-                <div style={{ width: '50%', margin: '10px 10px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Lottie
-                      loop
-                      play
-                      animationData={robotLottie}
-                      style={{ width: 150, height: 150 }}
-                    />
-                  </div>
-
-                  {isLoggedIn ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ marginBottom: 20 }}>Your bot is logged in and ready to go!</div>
-                      <Button iconBefore={LogOutIcon} type="button" intent="danger" onClick={onLogoutClick}>Log out</Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <TextInputField
-                        isInvalid={username.length === 0}
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        label="Instagram username"
-                        autoCapitalize="off"
-                        autoCorrect="off"
-                        spellCheck={false}
-                      />
-
-                      <TextInputField
-                        value={password}
-                        isInvalid={password.length < 4}
-                        onChange={(e) => setPassword(e.target.value)}
-                        type="password"
-                        label="Password"
-                        description="We do not store your password"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ width: '50%', margin: '0px 10px' }}>
-                  <div style={{ marginBottom: 10, marginTop: 20 }}>
-                    <AccountsList accounts={usersToFollowFollowersOf} setAccounts={setUsersToFollowFollowersOf} hasWarning={fewUsersToFollowFollowersOf} label="List of accounts followers to follow" placeholder="Influencers, celebrities, etc." tooltip={`Input a list of accounts whose followers the bot should follow. Choose accounts with a lot of followers (e.g influencers above 100k). The bot will then visit each of these and follow their most recent followers, in hope that they will follow you back. ${advancedSettings.dontUnfollowUntilDaysElapsed} days later, it will unfollow them. For best results, choose accounts from a niche market that you want to target.`} />
-                  </div>
-
-                  <div style={{ margin: '20px 0' }}>
-                    <Checkbox
-                      label="Follow private accounts?"
-                      checked={!skipPrivate}
-                      onChange={(e) => setSkipPrivate(!e.target.checked)}
-                    />
-                  </div>
-
-                  <div style={{ margin: '20px 0' }}>
-                    <Checkbox
-                      label="Also like a few photos after following users?"
-                      checked={advancedSettings.maxLikesPerUser > 0}
-                      onChange={(e) => setAdvancedSetting('maxLikesPerUser', e.target.checked ? 2 : 0)}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ maxWidth: 600, margin: 'auto', color: 'rgba(0,0,0,0.7)' }}>
-                When you press the <b>Start</b> button the bot will start immediately, then repeat every day at {advancedSettings.runAtHour}:00 until the app is stopped.<br />
-                To avoid temporary blocks, please run the bot on the same internet/WiFi as you normally use your Instagram app. <b>Do not use a VPN.</b><br />
-              </div>
-            </div>
-          )}
-
-          <div style={{ margin: '20px 0', textAlign: 'center' }}>
-            {running ? (
-              <Button iconBefore={StopIcon} height={40} type="button" intent="danger" onClick={onStartPress}>Stop bot</Button>
-            ) : (
-              <>
-                <Tooltip content="Start the bot in the primary mode of operation (follow/unfollow/like etc)">
-                  <Button iconBefore={PlayIcon} height={40} type="button" intent="success" onClick={onStartPress}>Start bot</Button>
-                </Tooltip>
-                <br />
-                <Tooltip content={`Special mode of operation: Unfollow all accounts that were followed by bot more than ${advancedSettings.dontUnfollowUntilDaysElapsed} days ago`}>
-                  <Button height={30} type="button" onClick={onUnfollowOldFollowedPress}>Unfollow only</Button>
-                </Tooltip>
-                <Tooltip content={`Special mode of operation: Unfollow all accounts that are not following you back (except accounts that were followed by bot in the last ${advancedSettings.dontUnfollowUntilDaysElapsed} days)`}>
-                  <Button height={30} type="button" onClick={onUnfollowNonMutualFollowersPress}>Unfollow non-mutual</Button>
-                </Tooltip>
-                <Tooltip content="Special mode of operation: Unfollow a comma separated list of accounts that you specify">
-                  <Button height={30} type="button" onClick={() => setUnfollowUserListDialogShown(true)}>Unfollow list...</Button>
-                </Tooltip>
-                <Tooltip content="Special mode of operation: Follow a comma separated list of accounts that you specify">
-                  <Button height={30} type="button" onClick={() => setFollowUserListDialogShown(true)}>Follow list...</Button>
-                </Tooltip>
-                {isDev && (
-                  <Button height={30} type="button" onClick={() => onRunTestCode()}>Run test code</Button>
-                )}
-              </>
-            )}
-          </div>
-
-          <div style={{ margin: '20px 0', textAlign: 'center' }}>
-            <Button iconBefore={SettingsIcon} type="button" onClick={() => setAdvancedVisible(true)}>Show advanced settings</Button>
-            {logs.length > 0 && <Button iconBefore={ListIcon} type="button" onClick={() => setLogsVisible(true)}>Logs</Button>}
-            <Button iconBefore={IssueIcon} type="button" onClick={onTroubleshootingClick}>Troubleshooting</Button>
-          </div>
-
-          {instautoData && !running && <StatisticsBanner data={instautoData} />}
-
-          <div style={{ position: 'fixed', right: 5, bottom: 5, background: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center' }}>
-            <Button appearance="minimal" onClick={() => electron.shell.openExternal('https://mifi.no/')}>More apps by mifi.no</Button>
+    <div style={styles.container}>
+      <div style={styles.contentWrapper}>
+        {running ? (
+          <div style={styles.runningCard}>
             <Lottie
               loop
-              play={!running}
-              goTo={running ? 50 : undefined}
-              animationData={loveLottie}
-              style={{ width: 50, height: 50, margin: -10 }}
+              play={shouldPlayAnimations}
+              animationData={runningLottie}
+              style={{ maxWidth: 180, width: '100%', margin: '0 auto 24px' }}
             />
+
+            <div style={styles.title}>Bot is Running</div>
+            <div style={styles.subtitle}>
+              Leave the app running and connected to power. The bot will work automatically while you focus on other things.
+            </div>
+
+            <div style={styles.infoBox}>
+              <div style={{ marginBottom: '12px' }}>
+                <strong>Keep the browser window open</strong>
+              </div>
+              <div style={{ fontSize: '13px', color: '#6e6e73' }}>
+                Don't close or minimize the bot's browser window for proper operation.
+              </div>
+            </div>
+
+            <div style={{ marginTop: '32px', fontSize: '15px', lineHeight: '1.6', color: '#1d1d1f' }}>
+              <strong>No ads. No tracking. Just open source.</strong>
+              <div style={{ fontSize: '13px', color: '#6e6e73', marginTop: '8px' }}>
+                This app is free for everyone. Consider supporting development to keep it updated.
+              </div>
+              <div
+                role="button"
+                tabIndex="0"
+                style={{ cursor: 'pointer', color: '#007aff', fontWeight: '600', marginTop: '12px' }}
+                onClick={onDonateClick}
+              >
+                Support Development ❤️
+              </div>
+            </div>
+
+            <div style={{ marginTop: '32px' }}>
+              <LogView fontSize={11} logs={logs} style={{ maxHeight: '200px' }} />
+            </div>
+
+            <Button
+              iconBefore={StopIcon}
+              height={48}
+              type="button"
+              intent="danger"
+              onClick={onStartPress}
+              style={{ ...styles.primaryButton, width: '100%', marginTop: '32px' }}
+            >
+              Stop Bot
+            </Button>
           </div>
-        </div>
+        ) : (
+          <div style={styles.card}>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <Lottie
+                loop
+                play
+                animationData={robotLottie}
+                style={{ width: 160, height: 160, margin: '0 auto 16px' }}
+              />
+              <div style={styles.title}>SimpleInstaBot</div>
+              <div style={styles.subtitle}>
+                Grow your Instagram following automatically with smart automation
+              </div>
+            </div>
+
+            {isLoggedIn ? (
+              <div style={{ textAlign: 'center', padding: '32px', background: '#f5f5f7', borderRadius: '16px', marginBottom: '32px' }}>
+                <div style={{ fontSize: '17px', fontWeight: '600', color: '#34c759', marginBottom: '16px' }}>
+                  ✓ Bot is logged in and ready
+                </div>
+                <Button
+                  iconBefore={LogOutIcon}
+                  type="button"
+                  intent="danger"
+                  onClick={onLogoutClick}
+                  style={{ minHeight: '44px', borderRadius: '10px' }}
+                >
+                  Log Out
+                </Button>
+              </div>
+            ) : (
+              <div style={{ marginBottom: '32px' }}>
+                <div style={styles.sectionTitle}>Instagram Account</div>
+                <TextInputField
+                  isInvalid={username.length === 0}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  label="Username"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  height={48}
+                  style={styles.inputField}
+                />
+
+                <TextInputField
+                  value={password}
+                  isInvalid={password.length < 4}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  label="Password"
+                  description="We do not store your password"
+                  height={48}
+                  style={styles.inputField}
+                />
+              </div>
+            )}
+
+            <div style={styles.sectionTitle}>Target Accounts</div>
+            <div style={{ marginBottom: '24px' }}>
+              <AccountsList
+                accounts={usersToFollowFollowersOf}
+                setAccounts={setUsersToFollowFollowersOf}
+                hasWarning={fewUsersToFollowFollowersOf}
+                label="Accounts whose followers to target"
+                placeholder="@influencer1 @influencer2 @celebrity"
+                tooltip={`Choose 5+ accounts with large followings (100k+) in your target niche. The bot will follow their recent followers, and unfollow them after ${advancedSettings.dontUnfollowUntilDaysElapsed} days.`}
+              />
+            </div>
+
+            <div style={styles.checkboxWrapper}>
+              <Checkbox
+                label="Follow private accounts"
+                checked={!skipPrivate}
+                onChange={(e) => setSkipPrivate(!e.target.checked)}
+              />
+            </div>
+
+            <div style={styles.checkboxWrapper}>
+              <Checkbox
+                label="Like photos after following users"
+                checked={advancedSettings.maxLikesPerUser > 0}
+                onChange={(e) => setAdvancedSetting('maxLikesPerUser', e.target.checked ? 2 : 0)}
+              />
+            </div>
+
+            <div style={styles.infoBox}>
+              <strong>Important Tips</strong>
+              <ul style={{ margin: '12px 0 0 0', paddingLeft: '20px', lineHeight: '1.7' }}>
+                <li>Use the same WiFi as your phone's Instagram app</li>
+                <li>Don't use a VPN - this may trigger security warnings</li>
+                <li>Bot runs daily at {advancedSettings.runAtHour}:00 until stopped</li>
+              </ul>
+            </div>
+
+            <div style={{ textAlign: 'center' }}>
+              <Tooltip content="Start the bot in primary mode (follow/unfollow/like)">
+                <Button
+                  iconBefore={PlayIcon}
+                  height={56}
+                  type="button"
+                  intent="success"
+                  onClick={onStartPress}
+                  style={{ ...styles.primaryButton, width: '100%', minHeight: '56px', fontSize: '19px' }}
+                >
+                  Start Bot
+                </Button>
+              </Tooltip>
+
+              <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e5e5e7' }}>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#6e6e73', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Special Operations
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px' }}>
+                  <Tooltip content={`Unfollow accounts followed more than ${advancedSettings.dontUnfollowUntilDaysElapsed} days ago`}>
+                    <Button height={44} type="button" onClick={onUnfollowOldFollowedPress} style={styles.secondaryButton}>
+                      Unfollow Old
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Unfollow accounts not following you back">
+                    <Button height={44} type="button" onClick={onUnfollowNonMutualFollowersPress} style={styles.secondaryButton}>
+                      Unfollow Non-Mutual
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Unfollow a custom list of accounts">
+                    <Button height={44} type="button" onClick={() => setUnfollowUserListDialogShown(true)} style={styles.secondaryButton}>
+                      Unfollow List...
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Follow a custom list of accounts">
+                    <Button height={44} type="button" onClick={() => setFollowUserListDialogShown(true)} style={styles.secondaryButton}>
+                      Follow List...
+                    </Button>
+                  </Tooltip>
+                  {isDev && (
+                    <Button height={44} type="button" onClick={() => onRunTestCode()} style={styles.secondaryButton}>
+                      Test Code
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <Button iconBefore={SettingsIcon} type="button" onClick={() => setAdvancedVisible(true)} appearance="minimal">
+                  Advanced Settings
+                </Button>
+                {logs.length > 0 && (
+                  <Button iconBefore={ListIcon} type="button" onClick={() => setLogsVisible(true)} appearance="minimal">
+                    View Logs
+                  </Button>
+                )}
+                <Button iconBefore={IssueIcon} type="button" onClick={onTroubleshootingClick} appearance="minimal">
+                  Troubleshooting
+                </Button>
+              </div>
+            </div>
+
+            {instautoData && (
+              <div style={styles.statsContainer}>
+                <div style={styles.statItem}>
+                  <div style={styles.statNumber}>{instautoData.numFollowedLastDay}</div>
+                  <div style={styles.statLabel}>Followed Today</div>
+                  <div style={{ fontSize: '11px', color: '#86868b', marginTop: '4px' }}>
+                    {instautoData.numTotalFollowedUsers} total
+                  </div>
+                </div>
+                <div style={styles.statItem}>
+                  <div style={styles.statNumber}>{instautoData.numUnfollowedLastDay}</div>
+                  <div style={styles.statLabel}>Unfollowed Today</div>
+                  <div style={{ fontSize: '11px', color: '#86868b', marginTop: '4px' }}>
+                    {instautoData.numTotalUnfollowedUsers} total
+                  </div>
+                </div>
+                <div style={styles.statItem}>
+                  <div style={styles.statNumber}>{instautoData.numLikedLastDay}</div>
+                  <div style={styles.statLabel}>Liked Today</div>
+                  <div style={{ fontSize: '11px', color: '#86868b', marginTop: '4px' }}>
+                    {instautoData.numTotalLikedPhotos} total
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div style={styles.footer}>
+        <Button
+          appearance="minimal"
+          onClick={() => electron.shell.openExternal('https://mifi.no/')}
+          style={{ fontSize: '13px' }}
+        >
+          More apps by mifi.no
+        </Button>
+        <Lottie
+          loop
+          play={!running}
+          goTo={running ? 50 : undefined}
+          animationData={loveLottie}
+          style={{ width: 40, height: 40, display: 'inline-block', verticalAlign: 'middle', marginLeft: '8px' }}
+        />
       </div>
 
       <SideSheet containerProps={{ style: { maxWidth: '100%' } }} isShown={advancedVisible} onCloseComplete={() => setAdvancedVisible(false)}>
@@ -711,7 +910,7 @@ const App = memo(() => {
 
       <AccountsListDialog label="Unfollow accounts" isShown={unfollowUserListDialogShown} onCloseComplete={() => setUnfollowUserListDialogShown(false)} onConfirm={onUnfollowUserList} />
       <AccountsListDialog label="Follow accounts" isShown={followUserListDialogShown} onCloseComplete={() => setFollowUserListDialogShown(false)} onConfirm={onFollowUserList} />
-    </>
+    </div>
   );
 });
 
