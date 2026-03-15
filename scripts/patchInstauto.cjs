@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * Patches instauto's like-button selector after every `yarn install`.
  *

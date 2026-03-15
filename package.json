@@ -27,7 +27,7 @@
     "pack-mac": "yarn build && electron-builder --mac",
     "pack-win": "yarn build && electron-builder --win",
     "pack-linux": "yarn build && electron-builder --linux",
-    "postinstall": "electron-builder install-app-deps && node scripts/patch-instauto.cjs",
+    "postinstall": "electron-builder install-app-deps && node scripts/patchInstauto.cjs",
     "prepare": "husky"
   },
   "dependencies": {

@@ -72,21 +72,21 @@ export async function patchedLikeCurrentUserImagesPageCode({
 
     if (!likeButtonChild) throw new Error('Like button not found (aria-label)');
 
-    function findClickableParent(el) {
+    const findClickableParent = (el) => {
       let elAt = el ?? undefined;
       while (elAt) {
         if ('click' in elAt && typeof elAt.click === 'function') return elAt;
         elAt = elAt.parentElement ?? undefined;
       }
       return undefined;
-    }
+    };
 
     const foundClickable = findClickableParent(likeButtonChild);
     if (!foundClickable) throw new Error('Like button not found');
 
     const instautoLog2 = globalThis.instautoLog;
 
-    function likeImage() {
+    const likeImage = () => {
       const dialogResolved = dialog;
       if (!dialogResolved) throw new Error('Dialog not found');
 
