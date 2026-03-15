@@ -770,7 +770,7 @@ const App = memo(() => {
       autoLikeTriggered.current = true;
       onLikePhotosOnlyPress();
     }
-  }, [autoLikeFlag, isLoggedIn, onLikePhotosOnlyPress, running]);
+  }, [isLoggedIn, onLikePhotosOnlyPress, running]);
 
   const onRunTestCode = useCallback(async () => {
     await startInstautoAction(async () => runTestCode());
