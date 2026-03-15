@@ -15,59 +15,49 @@ let src = fs.readFileSync(filePath, 'utf8');
 
 let changed = false;
 
-// Fix 1 — add image.click(), drop section search, use svg[aria-label="Like"] directly
-const oldSelector = `const section = [...dialog.querySelectorAll('section')].find((s) => s.querySelectorAll('*[aria-label="Like"]')[0] && s.querySelectorAll('*[aria-label="Comment"]')[0]);
+// Fix 1 — rewrite the per-post loop body:
+//   - add image.click() before sleeping
+//   - use svg[aria-label="Like"].closest('[role="button"]') to click the right element
+//   - add logging at every step
+//   - simplify close button the same way
+
+const oldLoopBody = `window.instautoLog(\`Clicking post: \${image.href}\`);
+            await window.instautoSleep(3000);
+            const dialog = document.querySelector('*[role=dialog]');
+            if (!dialog)
+                throw new Error('Dialog not found');
+            const section = [...dialog.querySelectorAll('section')].find((s) => s.querySelectorAll('*[aria-label="Like"]')[0] && s.querySelectorAll('*[aria-label="Comment"]')[0]);
             if (!section)
                 throw new Error('Like button section not found');
             const likeButtonChild = section.querySelectorAll('*[aria-label="Like"]')[0];
             if (!likeButtonChild)
                 throw new Error('Like button not found (aria-label)');`;
 
-// The patched form already in node_modules (intermediate state)
-const intermediateSelector = `const section = [...dialog.querySelectorAll('section')].find((s) => s.querySelectorAll('*[aria-label="Like"]')[0] && s.querySelectorAll('*[aria-label="Comment"]')[0]);
-            const likeButtonChild = section
-                ? section.querySelectorAll('*[aria-label="Like"]')[0]
-                : dialog.querySelector('[aria-label="Like"]');
-            if (!likeButtonChild)
-                throw new Error('Like button not found (aria-label)');`;
-
-const newSelector = `// Find the Like SVG directly — works regardless of DOM nesting
-            const likeButtonChild = dialog.querySelector('svg[aria-label="Like"]');
-            if (!likeButtonChild)
-                throw new Error('Like button not found (svg[aria-label="Like"])');`;
-
-// Old loop header (no click)
-const oldLoopHeader = `window.instautoLog(\`Clicking post: \${image.href}\`);
-            await window.instautoSleep(3000);`;
-
-const newLoopHeader = `window.instautoLog(\`Clicking post: \${image.href}\`);
+const newLoopBody = `window.instautoLog(\`Clicking post: \${image.href}\`);
             image.click?.();
-            await window.instautoSleep(3000);`;
+            await window.instautoSleep(3000);
+            const dialog = document.querySelector('*[role=dialog]');
+            window.instautoLog(dialog ? 'Dialog found' : 'Dialog NOT found');
+            if (!dialog)
+                throw new Error('Dialog not found');
+            // Find the Like SVG then walk up to its role="button" wrapper
+            const likeSvg = dialog.querySelector('svg[aria-label="Like"]');
+            window.instautoLog(likeSvg ? 'Found Like SVG' : 'Like SVG NOT found in dialog');
+            if (!likeSvg)
+                throw new Error('Like SVG not found (svg[aria-label="Like"])');
+            const likeButton = likeSvg.closest('[role="button"]');
+            window.instautoLog(likeButton ? 'Found Like role=button parent' : 'Like role=button parent NOT found');
+            if (!likeButton)
+                throw new Error('Like button (role=button parent) not found');`;
 
-// Apply selector fix (handle both original and intermediate forms)
-if (src.includes(oldSelector)) {
-  src = src.replace(oldSelector, newSelector);
+if (src.includes(oldLoopBody)) {
+  src = src.replace(oldLoopBody, newLoopBody);
   changed = true;
-  console.log('[patch-instauto] ✓ Applied Fix 1a: svg like-button selector (from original)');
-} else if (src.includes(intermediateSelector)) {
-  src = src.replace(intermediateSelector, newSelector);
-  changed = true;
-  console.log('[patch-instauto] ✓ Applied Fix 1a: svg like-button selector (from intermediate)');
-} else if (src.includes(newSelector)) {
-  console.log('[patch-instauto] Fix 1a already applied, skipping');
+  console.log('[patch-instauto] ✓ Applied Fix 1: like loop body rewrite');
+} else if (src.includes(newLoopBody)) {
+  console.log('[patch-instauto] Fix 1 already applied, skipping');
 } else {
-  console.warn('[patch-instauto] ⚠ Could not locate Fix 1a target — instauto may have updated');
-}
-
-// Apply click fix
-if (src.includes(oldLoopHeader) && !src.includes(newLoopHeader)) {
-  src = src.replace(oldLoopHeader, newLoopHeader);
-  changed = true;
-  console.log('[patch-instauto] ✓ Applied Fix 1b: image.click() before sleep');
-} else if (src.includes(newLoopHeader)) {
-  console.log('[patch-instauto] Fix 1b already applied, skipping');
-} else {
-  console.warn('[patch-instauto] ⚠ Could not locate Fix 1b target — instauto may have updated');
+  console.warn('[patch-instauto] ⚠ Could not locate Fix 1 target — instauto may have updated');
 }
 
 // Fix 2 — 2-second sleep + link count log before scanning post links
