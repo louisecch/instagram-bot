@@ -130,7 +130,7 @@ export async function patchedLikeCurrentUserImagesPageCode({
 
       foundClickable?.click?.();
       if (image.href) globalThis.instautoOnImageLiked(image.href);
-    }
+    };
 
     if (!dryRunIn) likeImage();
 
