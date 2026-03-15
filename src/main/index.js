@@ -137,6 +137,19 @@ async function initInstauto({
   dryRun,
   logger: loggerArg,
 }) {
+  // Clean up any existing window first
+  if (instautoWindow) {
+    console.log('Cleaning up existing instauto window...');
+    try {
+      instautoWindow.destroy();
+    } catch (err) {
+      console.error('Error destroying existing window:', err);
+    }
+    instautoWindow = undefined;
+    // Wait a bit for cleanup
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+
   instautoWindow = new BrowserWindow({
     x: 0,
     y: 0,
@@ -209,7 +222,11 @@ function cleanupInstauto() {
   if (powerSaveBlockerId != null) powerSaveBlocker.stop(powerSaveBlockerId);
 
   if (instautoWindow) {
-    instautoWindow.destroy();
+    try {
+      instautoWindow.destroy();
+    } catch (err) {
+      console.error('Error destroying instauto window:', err);
+    }
     instautoWindow = undefined;
   }
   // TODO deinit more?
