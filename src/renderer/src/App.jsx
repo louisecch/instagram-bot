@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useRef, useCallback } from 'react';
+import { memo, useState, useEffect, useRef, useCallback } from "react";
 import {
   Paragraph,
   ResetIcon,
@@ -21,24 +21,24 @@ import {
   Badge,
   Label,
   Textarea,
-} from 'evergreen-ui';
-import Swal from 'sweetalert2';
-import moment from 'moment';
-import isEqual from 'lodash/isEqual';
-import Lottie from 'react-lottie-player';
-import withReactContent from 'sweetalert2-react-content';
-import JSON5 from 'json5';
+} from "evergreen-ui";
+import Swal from "sweetalert2";
+import moment from "moment";
+import isEqual from "lodash/isEqual";
+import Lottie from "react-lottie-player";
+import withReactContent from "sweetalert2-react-content";
+import JSON5 from "json5";
 
-import runningLottie from './14470-phone-running.json';
-import robotLottie from './10178-c-bot.json';
-import robotDizzyLottie from './13680-robot-call.json';
-import loveLottie from './13682-heart.json';
+import runningLottie from "./14470-phone-running.json";
+import robotLottie from "./10178-c-bot.json";
+import robotDizzyLottie from "./13680-robot-call.json";
+import loveLottie from "./13682-heart.json";
 
 // eslint-disable-next-line unicorn/prefer-global-this
 const { isDev } = window;
 
 // eslint-disable-next-line unicorn/prefer-global-this
-const electron = window.require('@electron/remote');
+const electron = window.require("@electron/remote");
 
 const {
   initInstautoDb,
@@ -54,12 +54,14 @@ const {
   deleteCookies,
   getInstautoData,
   runTestCode,
-} = electron.require('./index.js');
-const { store: configStore, defaults: configDefaults } = electron.require('./store.js');
+} = electron.require("./index.js");
+const { store: configStore, defaults: configDefaults } =
+  electron.require("./store.js");
 
 const ReactSwal = withReactContent(Swal);
 
-const cleanupAccounts = (accounts) => accounts.map((user) => user.replaceAll(/^@/g, ''));
+const cleanupAccounts = (accounts) =>
+  accounts.map((user) => user.replaceAll(/^@/g, ""));
 
 function safeSetConfig(key, val) {
   configStore.set(key, val !== undefined ? val : null);
@@ -67,7 +69,7 @@ function safeSetConfig(key, val) {
 
 function onTroubleshootingClick() {
   Swal.fire({
-    title: 'Troubleshooting',
+    title: "Troubleshooting",
     html: `
       <ul style="text-align: left">
         <li>Check that all @account names are correct.</li>
@@ -92,7 +94,8 @@ const AdvancedSettings = memo(
     onClose,
   }) => {
     const [advancedSettingsTxt, setAdvancedSettingsTxt] = useState();
-    const [advancedSettingsParsed, setAdvancedSettingsParsed] = useState(advancedSettings);
+    const [advancedSettingsParsed, setAdvancedSettingsParsed] =
+      useState(advancedSettings);
 
     const onTextareaChange = useCallback((e) => {
       const { value } = e.target;
@@ -105,31 +108,32 @@ const AdvancedSettings = memo(
       }
     }, []);
 
-    const tooHighWarning = 'NOTE: setting this too high may cause Action Blocked';
+    const tooHighWarning =
+      "NOTE: setting this too high may cause Action Blocked";
     const optsData = {
       dontUnfollowUntilDaysElapsed: {
         description:
-          'Automatically unfollow auto-followed users after this number of days',
+          "Automatically unfollow auto-followed users after this number of days",
       },
       followUserMinFollowing: {
-        description: 'Skip users who follow less users than this',
+        description: "Skip users who follow less users than this",
       },
       followUserMinFollowers: {
-        description: 'Skip users who have less followers than this',
+        description: "Skip users who have less followers than this",
       },
       followUserMaxFollowers: {
-        description: 'Skip users who have more followers than this',
+        description: "Skip users who have more followers than this",
       },
       followUserMaxFollowing: {
-        description: 'Skip users who are following more than this',
+        description: "Skip users who are following more than this",
       },
       followUserRatioMin: {
         description:
-          'Skip users that have a followers/following ratio lower than this',
+          "Skip users that have a followers/following ratio lower than this",
       },
       followUserRatioMax: {
         description:
-          'Skip users that have a followers/following ratio higher than this',
+          "Skip users that have a followers/following ratio higher than this",
       },
       maxFollowsPerHour: {
         description: `Limit follow and unfollow operations per hour. ${tooHighWarning}`,
@@ -143,13 +147,13 @@ const AdvancedSettings = memo(
       },
       enableFollowUnfollow: {
         description:
-          'Enable follow/unfollow users? (can be disabled if you only want to like photos)',
+          "Enable follow/unfollow users? (can be disabled if you only want to like photos)",
       },
       maxLikesPerDay: {
         description: `Limit total photo likes per 24 hours. ${tooHighWarning}`,
       },
       runAtHour: {
-        description: 'Repeat at this hour (24hr based) every day',
+        description: "Repeat at this hour (24hr based) every day",
       },
       userAgent: {
         description: "Set the browser's user agent to this value",
@@ -170,7 +174,7 @@ const AdvancedSettings = memo(
       onClose();
     }, [advancedSettingsParsed, onChange, onClose]);
 
-    const formatValue = (value) => (value ? String(value) : 'unset');
+    const formatValue = (value) => (value ? String(value) : "unset");
 
     return (
       <>
@@ -187,10 +191,10 @@ const AdvancedSettings = memo(
             const hasChanged = !isEqual(defaultValue, value);
 
             return (
-              <div key={key} style={{ margin: '10px 0' }}>
+              <div key={key} style={{ margin: "10px 0" }}>
                 <b>{key}</b>
                 &nbsp;
-                <Badge color={value != null ? 'green' : undefined}>
+                <Badge color={value != null ? "green" : undefined}>
                   {formatValue(value)}
                 </Badge>
                 {hasChanged && (
@@ -234,7 +238,7 @@ const AdvancedSettings = memo(
           </Paragraph>
         )}
 
-        <div style={{ margin: '30px 0' }}>
+        <div style={{ margin: "30px 0" }}>
           <Checkbox
             label="Dry run - If checked, the bot will not perform any real actions (useful for testing)"
             checked={dryRun}
@@ -266,42 +270,44 @@ const AdvancedSettings = memo(
 const LogView = memo(({ logs, style, fontSize } = {}) => {
   const logViewRef = useRef();
   useEffect(() => {
-    if (logViewRef.current) logViewRef.current.scrollTop = logViewRef.current.scrollHeight;
+    if (logViewRef.current)
+      logViewRef.current.scrollTop = logViewRef.current.scrollHeight;
   }, [logs]);
 
   return (
     <div
       ref={logViewRef}
       style={{
-        width: '100%',
+        width: "100%",
         height: 100,
-        overflowY: 'scroll',
-        overflowX: 'hidden',
-        textAlign: 'left',
+        overflowY: "scroll",
+        overflowX: "hidden",
+        textAlign: "left",
         ...style,
       }}
     >
       {logs.map(({ args, level, time }, i) => {
-        const color = {
-          warn: '#f37121',
-          error: '#d92027',
-        }[level] || 'rgba(0,0,0,0.6)';
+        const color =
+          {
+            warn: "#f37121",
+            error: "#d92027",
+          }[level] || "rgba(0,0,0,0.6)";
 
         return (
           // eslint-disable-next-line react/no-array-index-key
           <div key={i}>
-            <span style={{ marginRight: 5, whiteSpace: 'pre-wrap', fontSize }}>
-              {moment(time).format('LT')}
+            <span style={{ marginRight: 5, whiteSpace: "pre-wrap", fontSize }}>
+              {moment(time).format("LT")}
             </span>
             <span
               style={{
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all',
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-all",
                 fontSize,
                 color,
               }}
             >
-              {args.map(String).join(' ')}
+              {args.map(String).join(" ")}
             </span>
           </div>
         );
@@ -316,7 +322,7 @@ const AccountsList = memo(
     const onChange = useCallback(
       (newVal) => {
         // Some people try hashtags
-        setAccounts(newVal.filter((v) => !v.startsWith('#')));
+        setAccounts(newVal.filter((v) => !v.startsWith("#")));
       },
       [setAccounts],
     );
@@ -335,7 +341,7 @@ const AccountsList = memo(
         )}
         <TagInput
           inputProps={{ placeholder }}
-          style={{ border: hasWarning ? '1px solid orange' : undefined }}
+          style={{ border: hasWarning ? "1px solid orange" : undefined }}
           values={accounts}
           onChange={onChange}
           separator={/[,\s]/}
@@ -367,22 +373,22 @@ const AccountsListDialog = ({ isShown, onCloseComplete, onConfirm, label }) => {
 // eslint-disable-next-line react/display-name
 const App = memo(() => {
   const [advancedSettings, setAdvancedSettings] = useState(() => ({
-    userAgent: configStore.get('userAgent'),
-    maxFollowsPerDay: configStore.get('maxFollowsPerDay'),
-    maxFollowsPerHour: configStore.get('maxFollowsPerHour'),
-    maxLikesPerDay: configStore.get('maxLikesPerDay'),
-    maxLikesPerUser: configStore.get('maxLikesPerUser'),
-    enableFollowUnfollow: configStore.get('enableFollowUnfollow'),
-    followUserRatioMin: configStore.get('followUserRatioMin'),
-    followUserRatioMax: configStore.get('followUserRatioMax'),
-    followUserMaxFollowers: configStore.get('followUserMaxFollowers'),
-    followUserMaxFollowing: configStore.get('followUserMaxFollowing'),
-    followUserMinFollowers: configStore.get('followUserMinFollowers'),
-    followUserMinFollowing: configStore.get('followUserMinFollowing'),
+    userAgent: configStore.get("userAgent"),
+    maxFollowsPerDay: configStore.get("maxFollowsPerDay"),
+    maxFollowsPerHour: configStore.get("maxFollowsPerHour"),
+    maxLikesPerDay: configStore.get("maxLikesPerDay"),
+    maxLikesPerUser: configStore.get("maxLikesPerUser"),
+    enableFollowUnfollow: configStore.get("enableFollowUnfollow"),
+    followUserRatioMin: configStore.get("followUserRatioMin"),
+    followUserRatioMax: configStore.get("followUserRatioMax"),
+    followUserMaxFollowers: configStore.get("followUserMaxFollowers"),
+    followUserMaxFollowing: configStore.get("followUserMaxFollowing"),
+    followUserMinFollowers: configStore.get("followUserMinFollowers"),
+    followUserMinFollowing: configStore.get("followUserMinFollowing"),
     dontUnfollowUntilDaysElapsed: configStore.get(
-      'dontUnfollowUntilDaysElapsed',
+      "dontUnfollowUntilDaysElapsed",
     ),
-    runAtHour: configStore.get('runAtHour'),
+    runAtHour: configStore.get("runAtHour"),
   }));
 
   function setAdvancedSetting(key, value) {
@@ -390,77 +396,86 @@ const App = memo(() => {
   }
 
   useEffect(
-    () => safeSetConfig('userAgent', advancedSettings.userAgent),
+    () => safeSetConfig("userAgent", advancedSettings.userAgent),
     [advancedSettings.userAgent],
   );
   useEffect(
-    () => safeSetConfig('maxFollowsPerDay', advancedSettings.maxFollowsPerDay),
+    () => safeSetConfig("maxFollowsPerDay", advancedSettings.maxFollowsPerDay),
     [advancedSettings.maxFollowsPerDay],
   );
   useEffect(
-    () => safeSetConfig('maxFollowsPerHour', advancedSettings.maxFollowsPerHour),
+    () =>
+      safeSetConfig("maxFollowsPerHour", advancedSettings.maxFollowsPerHour),
     [advancedSettings.maxFollowsPerHour],
   );
   useEffect(
-    () => safeSetConfig('maxLikesPerDay', advancedSettings.maxLikesPerDay),
+    () => safeSetConfig("maxLikesPerDay", advancedSettings.maxLikesPerDay),
     [advancedSettings.maxLikesPerDay],
   );
   useEffect(
-    () => safeSetConfig('maxLikesPerUser', advancedSettings.maxLikesPerUser),
+    () => safeSetConfig("maxLikesPerUser", advancedSettings.maxLikesPerUser),
     [advancedSettings.maxLikesPerUser],
   );
   useEffect(
-    () => safeSetConfig(
-      'enableFollowUnfollow',
-      advancedSettings.enableFollowUnfollow,
-    ),
+    () =>
+      safeSetConfig(
+        "enableFollowUnfollow",
+        advancedSettings.enableFollowUnfollow,
+      ),
     [advancedSettings.enableFollowUnfollow],
   );
   useEffect(
-    () => safeSetConfig('followUserRatioMin', advancedSettings.followUserRatioMin),
+    () =>
+      safeSetConfig("followUserRatioMin", advancedSettings.followUserRatioMin),
     [advancedSettings.followUserRatioMin],
   );
   useEffect(
-    () => safeSetConfig('followUserRatioMax', advancedSettings.followUserRatioMax),
+    () =>
+      safeSetConfig("followUserRatioMax", advancedSettings.followUserRatioMax),
     [advancedSettings.followUserRatioMax],
   );
   useEffect(
-    () => safeSetConfig(
-      'followUserMaxFollowers',
-      advancedSettings.followUserMaxFollowers,
-    ),
+    () =>
+      safeSetConfig(
+        "followUserMaxFollowers",
+        advancedSettings.followUserMaxFollowers,
+      ),
     [advancedSettings.followUserMaxFollowers],
   );
   useEffect(
-    () => safeSetConfig(
-      'followUserMaxFollowing',
-      advancedSettings.followUserMaxFollowing,
-    ),
+    () =>
+      safeSetConfig(
+        "followUserMaxFollowing",
+        advancedSettings.followUserMaxFollowing,
+      ),
     [advancedSettings.followUserMaxFollowing],
   );
   useEffect(
-    () => safeSetConfig(
-      'followUserMinFollowers',
-      advancedSettings.followUserMinFollowers,
-    ),
+    () =>
+      safeSetConfig(
+        "followUserMinFollowers",
+        advancedSettings.followUserMinFollowers,
+      ),
     [advancedSettings.followUserMinFollowers],
   );
   useEffect(
-    () => safeSetConfig(
-      'followUserMinFollowing',
-      advancedSettings.followUserMinFollowing,
-    ),
+    () =>
+      safeSetConfig(
+        "followUserMinFollowing",
+        advancedSettings.followUserMinFollowing,
+      ),
     [advancedSettings.followUserMinFollowing],
   );
   useEffect(
-    () => safeSetConfig(
-      'dontUnfollowUntilDaysElapsed',
-      advancedSettings.dontUnfollowUntilDaysElapsed,
-    ),
+    () =>
+      safeSetConfig(
+        "dontUnfollowUntilDaysElapsed",
+        advancedSettings.dontUnfollowUntilDaysElapsed,
+      ),
     [advancedSettings.dontUnfollowUntilDaysElapsed],
   );
   useEffect(
-    () => safeSetConfig('runAtHour', advancedSettings.runAtHour),
+    () => safeSetConfig("runAtHour", advancedSettings.runAtHour),
     [advancedSettings.runAtHour],
   );
 
@@ -469,23 +484,24 @@ const App = memo(() => {
   const [running, setRunning] = useState(false);
   const [advancedVisible, setAdvancedVisible] = useState(false);
   const [logsVisible, setLogsVisible] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const [skipPrivate, setSkipPrivate] = useState(
-    configStore.get('skipPrivate'),
+    configStore.get("skipPrivate"),
   );
   const [usersToFollowFollowersOf, setUsersToFollowFollowersOf] = useState(
-    configStore.get('usersToFollowFollowersOf'),
+    configStore.get("usersToFollowFollowersOf"),
   );
 
   const [currentUsername, setCurrentUsername] = useState(
-    configStore.get('currentUsername'),
+    configStore.get("currentUsername"),
   );
   useEffect(
-    () => (currentUsername
-      ? safeSetConfig('currentUsername', currentUsername)
-      : configStore.delete('currentUsername')),
+    () =>
+      currentUsername
+        ? safeSetConfig("currentUsername", currentUsername)
+        : configStore.delete("currentUsername"),
     [currentUsername],
   );
 
@@ -496,8 +512,10 @@ const App = memo(() => {
 
   const [shouldPlayAnimations, setSouldPlayAnimations] = useState(true);
 
-  const [unfollowUserListDialogShown, setUnfollowUserListDialogShown] = useState(false);
-  const [followUserListDialogShown, setFollowUserListDialogShown] = useState(false);
+  const [unfollowUserListDialogShown, setUnfollowUserListDialogShown] =
+    useState(false);
+  const [followUserListDialogShown, setFollowUserListDialogShown] =
+    useState(false);
 
   useEffect(() => {
     if (running) {
@@ -517,9 +535,9 @@ const App = memo(() => {
 
   const [instautoData, setInstautoData] = useState();
 
-  useEffect(() => safeSetConfig('skipPrivate', skipPrivate), [skipPrivate]);
+  useEffect(() => safeSetConfig("skipPrivate", skipPrivate), [skipPrivate]);
   useEffect(
-    () => safeSetConfig('usersToFollowFollowersOf', usersToFollowFollowersOf),
+    () => safeSetConfig("usersToFollowFollowersOf", usersToFollowFollowersOf),
     [usersToFollowFollowersOf],
   );
 
@@ -560,12 +578,12 @@ const App = memo(() => {
     async (instautoAction) => {
       if (running) {
         const result = await Swal.fire({
-          title: 'Are you sure?',
-          text: 'This will terminate the bot and you will lose any log text. Note that the bot will still remember which users it has followed, and will unfollow them in the future.',
-          icon: 'warning',
+          title: "Are you sure?",
+          text: "This will terminate the bot and you will lose any log text. Note that the bot will still remember which users it has followed, and will unfollow them in the future.",
+          icon: "warning",
           showCancelButton: true,
-          confirmButtonText: 'Stop the bot',
-          cancelButtonText: 'Leave it running',
+          confirmButtonText: "Stop the bot",
+          cancelButtonText: "Leave it running",
         });
         if (result.value) electron.app.quit();
         return;
@@ -573,26 +591,26 @@ const App = memo(() => {
 
       if (usersToFollowFollowersOf.length === 0) {
         await Swal.fire({
-          icon: 'error',
-          text: 'Please add at least 1 account to the list!',
+          icon: "error",
+          text: "Please add at least 1 account to the list!",
         });
         return;
       }
 
       if (!isLoggedIn && (username.length === 0 || password.length === 0)) {
         await Swal.fire({
-          icon: 'error',
-          text: 'Please enter your username and password',
+          icon: "error",
+          text: "Please enter your username and password",
         });
         return;
       }
 
       if (fewUsersToFollowFollowersOf) {
         const { value } = await Swal.fire({
-          icon: 'warning',
-          text: 'We recommended to provide at least 5 users',
+          icon: "warning",
+          text: "We recommended to provide at least 5 users",
           showCancelButton: true,
-          confirmButtonText: 'Run anyway',
+          confirmButtonText: "Run anyway",
         });
         if (!value) return;
       }
@@ -606,11 +624,11 @@ const App = memo(() => {
       }
 
       const logger = {
-        log: (...args) => log('log', ...args),
-        error: (...args) => log('error', ...args),
-        warn: (...args) => log('warn', ...args),
-        info: (...args) => log('info', ...args),
-        debug: (...args) => log('debug', ...args),
+        log: (...args) => log("log", ...args),
+        error: (...args) => log("error", ...args),
+        warn: (...args) => log("warn", ...args),
+        info: (...args) => log("info", ...args),
+        debug: (...args) => log("debug", ...args),
       };
 
       try {
@@ -642,21 +660,21 @@ const App = memo(() => {
           dryRun,
 
           username: isLoggedIn ? currentUsername : username,
-          password: isLoggedIn ? '' : password,
+          password: isLoggedIn ? "" : password,
 
           logger,
         });
 
         await instautoAction();
       } catch (err) {
-        logger.error('Failed to run', err);
+        logger.error("Failed to run", err);
         await ReactSwal.fire({
-          icon: 'error',
-          title: 'Failed to run',
+          icon: "error",
+          title: "Failed to run",
           html: (
-            <div style={{ textAlign: 'left' }}>
+            <div style={{ textAlign: "left" }}>
               Try the troubleshooting button. Error:
-              <div style={{ color: '#aa0000' }}>{err.message}</div>
+              <div style={{ color: "#aa0000" }}>{err.message}</div>
             </div>
           ),
         });
@@ -711,9 +729,11 @@ const App = memo(() => {
   }, [startInstautoAction]);
 
   const onUnfollowOldFollowedPress = useCallback(async () => {
-    await startInstautoAction(async () => runBotUnfollowOldFollowed({
-      ageInDays: advancedSettings.dontUnfollowUntilDaysElapsed,
-    }));
+    await startInstautoAction(async () =>
+      runBotUnfollowOldFollowed({
+        ageInDays: advancedSettings.dontUnfollowUntilDaysElapsed,
+      }),
+    );
   }, [advancedSettings.dontUnfollowUntilDaysElapsed, startInstautoAction]);
 
   const onUnfollowUserList = useCallback(
@@ -721,7 +741,9 @@ const App = memo(() => {
       const accountsCleaned = cleanupAccounts(accounts);
       if (accountsCleaned.length === 0) return;
       setUnfollowUserListDialogShown(false);
-      await startInstautoAction(async () => runBotUnfollowUserList({ usersToUnfollow: accountsCleaned }));
+      await startInstautoAction(async () =>
+        runBotUnfollowUserList({ usersToUnfollow: accountsCleaned }),
+      );
     },
     [startInstautoAction],
   );
@@ -731,154 +753,163 @@ const App = memo(() => {
       const accountsCleaned = cleanupAccounts(accounts);
       if (accountsCleaned.length === 0) return;
       setFollowUserListDialogShown(false);
-      await startInstautoAction(async () => runBotFollowUserList({ users: accountsCleaned, skipPrivate }));
+      await startInstautoAction(async () =>
+        runBotFollowUserList({ users: accountsCleaned, skipPrivate }),
+      );
     },
     [skipPrivate, startInstautoAction],
   );
 
-  const onLikePhotosOnlyPress = useCallback(
-    async () => {
-      if (dryRun) {
-        const { value } = await Swal.fire({
-          icon: 'warning',
-          title: 'Dry Run is enabled',
-          text: 'Dry Run mode is on — the bot will NOT actually like any photos. Uncheck "Dry Run" in Advanced Settings to perform real actions.',
-          showCancelButton: true,
-          confirmButtonText: 'Run anyway (simulation)',
-          cancelButtonText: 'Cancel',
-        });
-        if (!value) return;
-      }
-      await startInstautoAction(async () => runBotLikePhotosOnly({
+  const onLikePhotosOnlyPress = useCallback(async () => {
+    if (dryRun) {
+      const { value } = await Swal.fire({
+        icon: "warning",
+        title: "Dry Run is enabled",
+        text: 'Dry Run mode is on — the bot will NOT actually like any photos. Uncheck "Dry Run" in Advanced Settings to perform real actions.',
+        showCancelButton: true,
+        confirmButtonText: "Run anyway (simulation)",
+        cancelButtonText: "Cancel",
+      });
+      if (!value) return;
+    }
+    await startInstautoAction(async () =>
+      runBotLikePhotosOnly({
         usernames: cleanupAccounts(usersToFollowFollowersOf),
         maxLikesPerUser: advancedSettings.maxLikesPerUser || 2,
         maxUsersToVisit: advancedSettings.maxFollowsPerDay || 50,
         skipPrivate,
-      }));
-    },
-    [dryRun, advancedSettings.maxFollowsPerDay, advancedSettings.maxLikesPerUser, skipPrivate, startInstautoAction, usersToFollowFollowersOf],
-  );
+      }),
+    );
+  }, [
+    dryRun,
+    advancedSettings.maxFollowsPerDay,
+    advancedSettings.maxLikesPerUser,
+    skipPrivate,
+    startInstautoAction,
+    usersToFollowFollowersOf,
+  ]);
 
   const onRunTestCode = useCallback(async () => {
     await startInstautoAction(async () => runTestCode());
   }, [startInstautoAction]);
 
-  const onDonateClick = () => electron.shell.openExternal('https://mifi.no/thanks');
+  const onDonateClick = () =>
+    electron.shell.openExternal("https://mifi.no/thanks");
 
   const styles = {
     container: {
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      background: 'linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%)',
+      display: "flex",
+      flexDirection: "column",
+      minHeight: "100vh",
+      background: "linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%)",
       fontFamily:
         '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
     },
     contentWrapper: {
       flex: 1,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '40px 20px',
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "40px 20px",
     },
     card: {
-      background: '#ffffff',
-      borderRadius: '20px',
-      boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
-      padding: '48px',
-      maxWidth: '880px',
-      width: '100%',
+      background: "#ffffff",
+      borderRadius: "20px",
+      boxShadow: "0 4px 24px rgba(0, 0, 0, 0.06)",
+      padding: "48px",
+      maxWidth: "880px",
+      width: "100%",
     },
     runningCard: {
-      background: '#ffffff',
-      borderRadius: '20px',
-      boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
-      padding: '48px',
-      maxWidth: '560px',
-      width: '100%',
-      textAlign: 'center',
+      background: "#ffffff",
+      borderRadius: "20px",
+      boxShadow: "0 4px 24px rgba(0, 0, 0, 0.06)",
+      padding: "48px",
+      maxWidth: "560px",
+      width: "100%",
+      textAlign: "center",
     },
     title: {
-      fontSize: '34px',
-      fontWeight: '700',
-      letterSpacing: '-0.5px',
-      color: '#1d1d1f',
-      marginBottom: '12px',
-      lineHeight: '1.2',
+      fontSize: "34px",
+      fontWeight: "700",
+      letterSpacing: "-0.5px",
+      color: "#1d1d1f",
+      marginBottom: "12px",
+      lineHeight: "1.2",
     },
     subtitle: {
-      fontSize: '17px',
-      color: '#6e6e73',
-      marginBottom: '32px',
-      lineHeight: '1.5',
+      fontSize: "17px",
+      color: "#6e6e73",
+      marginBottom: "32px",
+      lineHeight: "1.5",
     },
     sectionTitle: {
-      fontSize: '20px',
-      fontWeight: '600',
-      color: '#1d1d1f',
-      marginBottom: '16px',
-      marginTop: '32px',
+      fontSize: "20px",
+      fontWeight: "600",
+      color: "#1d1d1f",
+      marginBottom: "16px",
+      marginTop: "32px",
     },
     primaryButton: {
-      minHeight: '48px',
-      fontSize: '17px',
-      fontWeight: '500',
-      borderRadius: '12px',
-      padding: '0 32px',
-      marginTop: '24px',
+      minHeight: "48px",
+      fontSize: "17px",
+      fontWeight: "500",
+      borderRadius: "12px",
+      padding: "0 32px",
+      marginTop: "24px",
     },
     secondaryButton: {
-      minHeight: '44px',
-      fontSize: '15px',
-      borderRadius: '10px',
-      margin: '8px 6px',
+      minHeight: "44px",
+      fontSize: "15px",
+      borderRadius: "10px",
+      margin: "8px 6px",
     },
     inputField: {
-      marginBottom: '20px',
+      marginBottom: "20px",
     },
     checkboxWrapper: {
-      margin: '16px 0',
-      padding: '12px',
-      background: '#f5f5f7',
-      borderRadius: '12px',
+      margin: "16px 0",
+      padding: "12px",
+      background: "#f5f5f7",
+      borderRadius: "12px",
     },
     infoBox: {
-      background: '#f5f5f7',
-      borderRadius: '12px',
-      padding: '20px',
-      marginTop: '24px',
-      fontSize: '15px',
-      lineHeight: '1.6',
-      color: '#1d1d1f',
+      background: "#f5f5f7",
+      borderRadius: "12px",
+      padding: "20px",
+      marginTop: "24px",
+      fontSize: "15px",
+      lineHeight: "1.6",
+      color: "#1d1d1f",
     },
     statsContainer: {
-      display: 'flex',
-      justifyContent: 'space-around',
-      marginTop: '32px',
-      padding: '24px',
-      background: '#f5f5f7',
-      borderRadius: '16px',
+      display: "flex",
+      justifyContent: "space-around",
+      marginTop: "32px",
+      padding: "24px",
+      background: "#f5f5f7",
+      borderRadius: "16px",
     },
     statItem: {
-      textAlign: 'center',
+      textAlign: "center",
     },
     statNumber: {
-      fontSize: '32px',
-      fontWeight: '700',
-      color: '#007aff',
-      lineHeight: '1',
+      fontSize: "32px",
+      fontWeight: "700",
+      color: "#007aff",
+      lineHeight: "1",
     },
     statLabel: {
-      fontSize: '13px',
-      color: '#6e6e73',
-      marginTop: '8px',
-      fontWeight: '500',
+      fontSize: "13px",
+      color: "#6e6e73",
+      marginTop: "8px",
+      fontWeight: "500",
     },
     footer: {
-      textAlign: 'center',
-      padding: '24px',
-      fontSize: '13px',
-      color: '#6e6e73',
+      textAlign: "center",
+      padding: "24px",
+      fontSize: "13px",
+      color: "#6e6e73",
     },
   };
 
@@ -891,7 +922,7 @@ const App = memo(() => {
               loop
               play={shouldPlayAnimations}
               animationData={runningLottie}
-              style={{ maxWidth: 180, width: '100%', margin: '0 auto 24px' }}
+              style={{ maxWidth: 180, width: "100%", margin: "0 auto 24px" }}
             />
 
             <div style={styles.title}>Bot is Running</div>
@@ -901,26 +932,26 @@ const App = memo(() => {
             </div>
 
             <div style={styles.infoBox}>
-              <div style={{ marginBottom: '12px' }}>
+              <div style={{ marginBottom: "12px" }}>
                 <strong>Keep the browser window open</strong>
               </div>
-              <div style={{ fontSize: '13px', color: '#6e6e73' }}>
-                Don&apos;t close or minimize the bot&apos;s browser window for proper
-                operation.
+              <div style={{ fontSize: "13px", color: "#6e6e73" }}>
+                Don&apos;t close or minimize the bot&apos;s browser window for
+                proper operation.
               </div>
             </div>
 
             <div
               style={{
-                marginTop: '32px',
-                fontSize: '15px',
-                lineHeight: '1.6',
-                color: '#1d1d1f',
+                marginTop: "32px",
+                fontSize: "15px",
+                lineHeight: "1.6",
+                color: "#1d1d1f",
               }}
             >
               <strong>No ads. No tracking. Just open source.</strong>
               <div
-                style={{ fontSize: '13px', color: '#6e6e73', marginTop: '8px' }}
+                style={{ fontSize: "13px", color: "#6e6e73", marginTop: "8px" }}
               >
                 This app is free for everyone. Consider supporting development
                 to keep it updated.
@@ -929,10 +960,10 @@ const App = memo(() => {
                 role="button"
                 tabIndex="0"
                 style={{
-                  cursor: 'pointer',
-                  color: '#007aff',
-                  fontWeight: '600',
-                  marginTop: '12px',
+                  cursor: "pointer",
+                  color: "#007aff",
+                  fontWeight: "600",
+                  marginTop: "12px",
                 }}
                 onClick={onDonateClick}
               >
@@ -940,11 +971,11 @@ const App = memo(() => {
               </div>
             </div>
 
-            <div style={{ marginTop: '32px' }}>
+            <div style={{ marginTop: "32px" }}>
               <LogView
                 fontSize={11}
                 logs={logs}
-                style={{ maxHeight: '200px' }}
+                style={{ maxHeight: "200px" }}
               />
             </div>
 
@@ -956,8 +987,8 @@ const App = memo(() => {
               onClick={onStartPress}
               style={{
                 ...styles.primaryButton,
-                width: '100%',
-                marginTop: '32px',
+                width: "100%",
+                marginTop: "32px",
               }}
             >
               Stop Bot
@@ -965,12 +996,12 @@ const App = memo(() => {
           </div>
         ) : (
           <div style={styles.card}>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <div style={{ textAlign: "center", marginBottom: "40px" }}>
               <Lottie
                 loop
                 play
                 animationData={robotLottie}
-                style={{ width: 160, height: 160, margin: '0 auto 16px' }}
+                style={{ width: 160, height: 160, margin: "0 auto 16px" }}
               />
               <div style={styles.title}>SimpleInstaBot</div>
               <div style={styles.subtitle}>
@@ -982,19 +1013,19 @@ const App = memo(() => {
             {isLoggedIn ? (
               <div
                 style={{
-                  textAlign: 'center',
-                  padding: '32px',
-                  background: '#f5f5f7',
-                  borderRadius: '16px',
-                  marginBottom: '32px',
+                  textAlign: "center",
+                  padding: "32px",
+                  background: "#f5f5f7",
+                  borderRadius: "16px",
+                  marginBottom: "32px",
                 }}
               >
                 <div
                   style={{
-                    fontSize: '17px',
-                    fontWeight: '600',
-                    color: '#34c759',
-                    marginBottom: '16px',
+                    fontSize: "17px",
+                    fontWeight: "600",
+                    color: "#34c759",
+                    marginBottom: "16px",
                   }}
                 >
                   ✓ Bot is logged in and ready
@@ -1004,13 +1035,13 @@ const App = memo(() => {
                   type="button"
                   intent="danger"
                   onClick={onLogoutClick}
-                  style={{ minHeight: '44px', borderRadius: '10px' }}
+                  style={{ minHeight: "44px", borderRadius: "10px" }}
                 >
                   Log Out
                 </Button>
               </div>
             ) : (
-              <div style={{ marginBottom: '32px' }}>
+              <div style={{ marginBottom: "32px" }}>
                 <div style={styles.sectionTitle}>Instagram Account</div>
                 <TextInputField
                   isInvalid={username.length === 0}
@@ -1037,10 +1068,10 @@ const App = memo(() => {
               </div>
             )}
 
-            <div style={{ ...styles.sectionTitle, marginTop: '60px' }}>
+            <div style={{ ...styles.sectionTitle, marginTop: "60px" }}>
               Target Accounts
             </div>
-            <div style={{ marginBottom: '24px' }}>
+            <div style={{ marginBottom: "24px" }}>
               <AccountsList
                 accounts={usersToFollowFollowersOf}
                 setAccounts={setUsersToFollowFollowersOf}
@@ -1063,10 +1094,12 @@ const App = memo(() => {
               <Checkbox
                 label="Like photos after following users"
                 checked={advancedSettings.maxLikesPerUser > 0}
-                onChange={(e) => setAdvancedSetting(
-                  'maxLikesPerUser',
-                  e.target.checked ? 2 : 0,
-                )}
+                onChange={(e) =>
+                  setAdvancedSetting(
+                    "maxLikesPerUser",
+                    e.target.checked ? 2 : 0,
+                  )
+                }
               />
             </div>
 
@@ -1074,13 +1107,15 @@ const App = memo(() => {
               <strong>Important Tips</strong>
               <ul
                 style={{
-                  margin: '12px 0 0 0',
-                  paddingLeft: '20px',
-                  lineHeight: '1.7',
+                  margin: "12px 0 0 0",
+                  paddingLeft: "20px",
+                  lineHeight: "1.7",
                 }}
               >
                 <li>Use the same WiFi as your phone&apos;s Instagram app</li>
-                <li>Don&apos;t use a VPN - this may trigger security warnings</li>
+                <li>
+                  Don&apos;t use a VPN - this may trigger security warnings
+                </li>
                 <li>
                   Bot runs daily at {advancedSettings.runAtHour}:00 until
                   stopped
@@ -1088,7 +1123,7 @@ const App = memo(() => {
               </ul>
             </div>
 
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: "center" }}>
               <Tooltip content="Start the bot in primary mode (follow/unfollow/like)">
                 <Button
                   iconBefore={PlayIcon}
@@ -1098,9 +1133,9 @@ const App = memo(() => {
                   onClick={onStartPress}
                   style={{
                     ...styles.primaryButton,
-                    width: '100%',
-                    minHeight: '56px',
-                    fontSize: '19px',
+                    width: "100%",
+                    minHeight: "56px",
+                    fontSize: "19px",
                   }}
                 >
                   Start Bot
@@ -1109,29 +1144,29 @@ const App = memo(() => {
 
               <div
                 style={{
-                  marginTop: '32px',
-                  paddingTop: '24px',
-                  borderTop: '1px solid #e5e5e7',
+                  marginTop: "32px",
+                  paddingTop: "24px",
+                  borderTop: "1px solid #e5e5e7",
                 }}
               >
                 <div
                   style={{
-                    fontSize: '13px',
-                    fontWeight: '600',
-                    color: '#6e6e73',
-                    marginBottom: '16px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    color: "#6e6e73",
+                    marginBottom: "16px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
                   }}
                 >
                   Special Operations
                 </div>
                 <div
                   style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'center',
-                    gap: '8px',
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    gap: "8px",
                   }}
                 >
                   <Tooltip
@@ -1154,26 +1189,6 @@ const App = memo(() => {
                       style={styles.secondaryButton}
                     >
                       Unfollow Non-Mutual
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Unfollow a custom list of accounts">
-                    <Button
-                      height={44}
-                      type="button"
-                      onClick={() => setUnfollowUserListDialogShown(true)}
-                      style={styles.secondaryButton}
-                    >
-                      Unfollow List...
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Follow a custom list of accounts">
-                    <Button
-                      height={44}
-                      type="button"
-                      onClick={() => setFollowUserListDialogShown(true)}
-                      style={styles.secondaryButton}
-                    >
-                      Follow List...
                     </Button>
                   </Tooltip>
                   <Tooltip content="Like photos only without following users">
@@ -1201,11 +1216,11 @@ const App = memo(() => {
 
               <div
                 style={{
-                  marginTop: '24px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '12px',
-                  flexWrap: 'wrap',
+                  marginTop: "24px",
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "12px",
+                  flexWrap: "wrap",
                 }}
               >
                 <Button
@@ -1246,9 +1261,9 @@ const App = memo(() => {
                   <div style={styles.statLabel}>Followed Today</div>
                   <div
                     style={{
-                      fontSize: '11px',
-                      color: '#86868b',
-                      marginTop: '4px',
+                      fontSize: "11px",
+                      color: "#86868b",
+                      marginTop: "4px",
                     }}
                   >
                     {instautoData.numTotalFollowedUsers} total
@@ -1261,9 +1276,9 @@ const App = memo(() => {
                   <div style={styles.statLabel}>Unfollowed Today</div>
                   <div
                     style={{
-                      fontSize: '11px',
-                      color: '#86868b',
-                      marginTop: '4px',
+                      fontSize: "11px",
+                      color: "#86868b",
+                      marginTop: "4px",
                     }}
                   >
                     {instautoData.numTotalUnfollowedUsers} total
@@ -1276,9 +1291,9 @@ const App = memo(() => {
                   <div style={styles.statLabel}>Liked Today</div>
                   <div
                     style={{
-                      fontSize: '11px',
-                      color: '#86868b',
-                      marginTop: '4px',
+                      fontSize: "11px",
+                      color: "#86868b",
+                      marginTop: "4px",
                     }}
                   >
                     {instautoData.numTotalLikedPhotos} total
@@ -1293,8 +1308,8 @@ const App = memo(() => {
       <div style={styles.footer}>
         <Button
           appearance="minimal"
-          onClick={() => electron.shell.openExternal('https://mifi.no/')}
-          style={{ fontSize: '13px' }}
+          onClick={() => electron.shell.openExternal("https://mifi.no/")}
+          style={{ fontSize: "13px" }}
         >
           More apps by mifi.no
         </Button>
@@ -1306,15 +1321,15 @@ const App = memo(() => {
           style={{
             width: 40,
             height: 40,
-            display: 'inline-block',
-            verticalAlign: 'middle',
-            marginLeft: '8px',
+            display: "inline-block",
+            verticalAlign: "middle",
+            marginLeft: "8px",
           }}
         />
       </div>
 
       <SideSheet
-        containerProps={{ style: { maxWidth: '100%' } }}
+        containerProps={{ style: { maxWidth: "100%" } }}
         isShown={advancedVisible}
         onCloseComplete={() => setAdvancedVisible(false)}
       >
@@ -1340,7 +1355,7 @@ const App = memo(() => {
         <div style={{ margin: 20 }}>
           <h3>Logs from last run</h3>
 
-          <LogView logs={logs} fontSize={13} style={{ height: '100%' }} />
+          <LogView logs={logs} fontSize={13} style={{ height: "100%" }} />
         </div>
       </SideSheet>
 

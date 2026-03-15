@@ -1,23 +1,24 @@
-import { app, BrowserWindow, powerSaveBlocker } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import isDev from 'electron-is-dev';
-import * as path from 'node:path';
-import * as pie from 'puppeteer-in-electron';
-import puppeteer from 'puppeteer-core';
-import assert from 'node:assert';
-import fs from 'fs-extra';
-import filenamify from 'filenamify';
-import yargsParser from 'yargs-parser';
-import { fileURLToPath } from 'node:url';
+import { app, BrowserWindow, powerSaveBlocker } from "electron"; // eslint-disable-line import/no-extraneous-dependencies
+import isDev from "electron-is-dev";
+import * as path from "node:path";
+import * as pie from "puppeteer-in-electron";
+import puppeteer from "puppeteer-core";
+import assert from "node:assert";
+import fs from "fs-extra";
+import filenamify from "filenamify";
+import yargsParser from "yargs-parser";
+import { fileURLToPath } from "node:url";
 
-import moment from 'moment';
+import moment from "moment";
 // eslint-disable-next-line import/extensions
-import electronRemote from '@electron/remote/main/index.js'; // todo migrate away from this
-import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer'; // devtools installer
-import Instauto, { JSONDB } from 'instauto';
+import electronRemote from "@electron/remote/main/index.js"; // todo migrate away from this
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+} from "electron-devtools-installer"; // devtools installer
+import Instauto, { JSONDB } from "instauto";
 
 // eslint-disable-next-line import/extensions
-import * as store from './store.js';
-
+import * as store from "./store.js";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -47,26 +48,29 @@ function parseCliArgs() {
   const ignoreFirstArgs = isDev ? 2 : 1;
   // production: First arg is the app executable
   // dev: First 2 args are electron and the electron.js
-  const argsWithoutAppName = process.argv.length > ignoreFirstArgs ? process.argv.slice(ignoreFirstArgs) : [];
+  const argsWithoutAppName =
+    process.argv.length > ignoreFirstArgs
+      ? process.argv.slice(ignoreFirstArgs)
+      : [];
 
   return yargsParser(argsWithoutAppName);
 }
 
 const args = parseCliArgs();
-console.log('CLI arguments', args);
+console.log("CLI arguments", args);
 const { root: customRootPath } = args;
 
 if (customRootPath) {
-  console.log('Using custom root', customRootPath);
+  console.log("Using custom root", customRootPath);
   // must happen before 'ready' event
-  app.setPath('userData', path.join(customRootPath, 'electron'));
+  app.setPath("userData", path.join(customRootPath, "electron"));
 }
 
 function getFilePath(rel) {
-  return path.join(customRootPath || app.getPath('userData'), rel);
+  return path.join(customRootPath || app.getPath("userData"), rel);
 }
 
-const cookiesPath = getFilePath('cookies.json');
+const cookiesPath = getFilePath("cookies.json");
 
 async function checkHaveCookies() {
   return fs.pathExists(cookiesPath);
@@ -76,25 +80,41 @@ async function deleteCookies() {
   try {
     await fs.unlink(cookiesPath);
   } catch (err) {
-    logger.log('No cookies to delete', err);
+    logger.log("No cookies to delete", err);
   }
 }
 
 async function initInstautoDb(usernameIn) {
   const username = usernameIn && filenamify(usernameIn);
-  const followedDbPath = getFilePath(username ? `${username}-followed.json` : 'followed.json');
-  const unfollowedDbPath = getFilePath(username ? `${username}-unfollowed.json` : 'unfollowed.json');
-  const likedPhotosDbPath = getFilePath(username ? `${username}-liked-photos.json` : 'liked-photos.json');
+  const followedDbPath = getFilePath(
+    username ? `${username}-followed.json` : "followed.json",
+  );
+  const unfollowedDbPath = getFilePath(
+    username ? `${username}-unfollowed.json` : "unfollowed.json",
+  );
+  const likedPhotosDbPath = getFilePath(
+    username ? `${username}-liked-photos.json` : "liked-photos.json",
+  );
 
   // Ensure the directory exists
-  const dataDir = customRootPath || app.getPath('userData');
+  const dataDir = customRootPath || app.getPath("userData");
   await fs.ensureDir(dataDir);
 
   // Migrate any old paths if we have new version (with username) now:
   if (username) {
-    await fs.move(getFilePath('followed.json'), followedDbPath).catch(() => { /* ignore error */ });
-    await fs.move(getFilePath('unfollowed.json'), unfollowedDbPath).catch(() => { /* ignore error */ });
-    await fs.move(getFilePath('liked-photos.json'), likedPhotosDbPath).catch(() => { /* ignore error */ });
+    await fs.move(getFilePath("followed.json"), followedDbPath).catch(() => {
+      /* ignore error */
+    });
+    await fs
+      .move(getFilePath("unfollowed.json"), unfollowedDbPath)
+      .catch(() => {
+        /* ignore error */
+      });
+    await fs
+      .move(getFilePath("liked-photos.json"), likedPhotosDbPath)
+      .catch(() => {
+        /* ignore error */
+      });
   }
 
   instautoDb = await JSONDB({
@@ -139,11 +159,11 @@ async function initInstauto({
 }) {
   // Clean up any existing window first
   if (instautoWindow) {
-    console.log('Cleaning up existing instauto window...');
+    console.log("Cleaning up existing instauto window...");
     try {
       instautoWindow.destroy();
     } catch (err) {
-      console.error('Error destroying existing window:', err);
+      console.error("Error destroying existing window:", err);
     }
     instautoWindow = undefined;
     // Wait a bit for cleanup
@@ -154,7 +174,7 @@ async function initInstauto({
     x: 0,
     y: 0,
     webPreferences: {
-      partition: 'instauto', // Use non-persistent partition for compatibility
+      partition: "instauto", // Use non-persistent partition for compatibility
       backgroundThrottling: false,
       webSecurity: true,
       contextIsolation: false,
@@ -164,8 +184,8 @@ async function initInstauto({
   // Get the session for this partition
   const { session } = instautoWindow.webContents;
 
-  console.log('Session partition:', session.partition);
-  console.log('Cookies path:', cookiesPath);
+  console.log("Session partition:", session.partition);
+  console.log("Cookies path:", cookiesPath);
 
   const pieBrowser = await pieConnectPromise;
   const page = await pie.getPage(pieBrowser, instautoWindow);
@@ -194,7 +214,8 @@ async function initInstauto({
     followUserMaxFollowing,
     followUserMinFollowers,
     followUserMinFollowing,
-    dontUnfollowUntilTimeElapsed: dontUnfollowUntilDaysElapsed * 24 * 60 * 60 * 1000,
+    dontUnfollowUntilTimeElapsed:
+      dontUnfollowUntilDaysElapsed * 24 * 60 * 60 * 1000,
     excludeUsers,
     dryRun,
 
@@ -208,14 +229,16 @@ async function initInstauto({
   try {
     await instauto.init();
   } catch (err) {
-    loggerArg.error('Failed to initialize instauto:', err.message);
-    loggerArg.error('This may be due to network interception issues with persistent sessions.');
+    loggerArg.error("Failed to initialize instauto:", err.message);
+    loggerArg.error(
+      "This may be due to network interception issues with persistent sessions.",
+    );
     throw err;
   }
 
   logger = loggerArg;
 
-  powerSaveBlockerId = powerSaveBlocker.start('prevent-display-sleep');
+  powerSaveBlockerId = powerSaveBlocker.start("prevent-display-sleep");
 }
 
 function cleanupInstauto() {
@@ -225,7 +248,7 @@ function cleanupInstauto() {
     try {
       instautoWindow.destroy();
     } catch (err) {
-      console.error('Error destroying instauto window:', err);
+      console.error("Error destroying instauto window:", err);
     }
     instautoWindow = undefined;
   }
@@ -236,7 +259,14 @@ function cleanupInstauto() {
 }
 
 async function runBotNormalMode({
-  usernames, ageInDays, skipPrivate, runAtHour, maxLikesPerUser, maxFollowsTotal, instantStart, enableFollowUnfollow,
+  usernames,
+  ageInDays,
+  skipPrivate,
+  runAtHour,
+  maxLikesPerUser,
+  maxFollowsTotal,
+  instantStart,
+  enableFollowUnfollow,
 }) {
   assert(instauto);
 
@@ -244,16 +274,18 @@ async function runBotNormalMode({
     // const now = moment('2018-08-26T13:00:00+02:00');
     const now = moment();
     const isAfterHour = now.hour() >= runAtHour;
-    const nextRunTime = now.clone().startOf('day').add(runAtHour, 'hours');
-    if (isAfterHour) nextRunTime.add(1, 'day');
-    return (1 + ((Math.random() - 0.5) * 0.1)) * nextRunTime.diff(now);
+    const nextRunTime = now.clone().startOf("day").add(runAtHour, "hours");
+    if (isAfterHour) nextRunTime.add(1, "day");
+    return (1 + (Math.random() - 0.5) * 0.1) * nextRunTime.diff(now);
   }
 
   async function sleepUntilNextDay() {
     const msUntilNextRun = getMsUntilNextRun();
-    logger.log(`Sleeping ${msUntilNextRun / (60 * 60 * 1000)} hours (waiting until ${runAtHour}:00)...`);
+    logger.log(
+      `Sleeping ${msUntilNextRun / (60 * 60 * 1000)} hours (waiting until ${runAtHour}:00)...`,
+    );
     await new Promise((resolve) => setTimeout(resolve, msUntilNextRun));
-    logger.log('Done sleeping, running...');
+    logger.log("Done sleeping, running...");
   }
 
   if (!instantStart) await sleepUntilNextDay();
@@ -264,7 +296,10 @@ async function runBotNormalMode({
       const unfollowLimit = Math.floor(maxFollowsTotal * (2 / 3));
       let unfollowedCount = 0;
       if (enableFollowUnfollow) {
-        unfollowedCount = await instauto.unfollowOldFollowed({ ageInDays, limit: unfollowLimit });
+        unfollowedCount = await instauto.unfollowOldFollowed({
+          ageInDays,
+          limit: unfollowLimit,
+        });
         if (unfollowedCount > 0) await instauto.sleep(10 * 60 * 1000);
       }
 
@@ -279,7 +314,7 @@ async function runBotNormalMode({
         likeImagesMax: likingEnabled ? maxLikesPerUser : undefined,
       });
 
-      logger.log('Done running');
+      logger.log("Done running");
 
       await instauto.sleep(30000);
     } catch (err) {
@@ -306,11 +341,18 @@ async function runBotFollowUserList({ users, limit, skipPrivate } = {}) {
   await instauto.safelyFollowUserList({ users, limit, skipPrivate });
 }
 
-async function runBotLikePhotosOnly({ usernames, maxLikesPerUser, maxUsersToVisit, skipPrivate } = {}) {
+async function runBotLikePhotosOnly({
+  usernames,
+  maxLikesPerUser,
+  maxUsersToVisit,
+  skipPrivate,
+} = {}) {
   assert(instauto);
 
   try {
-    logger.log(`Starting like photos only mode for ${usernames.length} accounts, visiting up to ${maxUsersToVisit} users...`);
+    logger.log(
+      `Starting like photos only mode for ${usernames.length} accounts, visiting up to ${maxUsersToVisit} users...`,
+    );
 
     await instauto.followUsersFollowers({
       usersToFollowFollowersOf: usernames,
@@ -321,9 +363,9 @@ async function runBotLikePhotosOnly({ usernames, maxLikesPerUser, maxUsersToVisi
       likeImagesMax: maxLikesPerUser || 2,
     });
 
-    logger.log('Done liking photos');
+    logger.log("Done liking photos");
   } catch (err) {
-    logger.error('Error in like photos only mode:', err);
+    logger.error("Error in like photos only mode:", err);
     throw err;
   }
 }
@@ -341,7 +383,7 @@ function createWindow() {
     webPreferences: {
       contextIsolation: false, // todo
       nodeIntegration: true, // todo
-      preload: fileURLToPath(new URL('../preload/index.cjs', import.meta.url)),
+      preload: fileURLToPath(new URL("../preload/index.cjs", import.meta.url)),
       // https://github.com/electron/electron/issues/5107
       webSecurity: !isDev,
       backgroundThrottling: false, // Attempt to fix https://github.com/mifi/SimpleInstaBot/issues/37
@@ -351,20 +393,23 @@ function createWindow() {
 
   electronRemote.enable(mainWindow.webContents);
 
-  if (isDev) mainWindow.loadURL('http://localhost:3001');
-  else mainWindow.loadFile('out/renderer/index.html', { query: { data: JSON.stringify({ isDev }) } });
+  if (isDev) mainWindow.loadURL("http://localhost:3001");
+  else
+    mainWindow.loadFile("out/renderer/index.html", {
+      query: { data: JSON.stringify({ isDev }) },
+    });
 
   if (isDev) {
     installExtension(REACT_DEVELOPER_TOOLS)
       .then((name) => console.log(`Added Extension: ${name}`))
-      .catch((err) => console.log('An error occurred:', err));
+      .catch((err) => console.log("An error occurred:", err));
   }
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', () => {
+  mainWindow.on("closed", () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -375,14 +420,14 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on("ready", createWindow);
 
 // Quit when all windows are closed.
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   app.quit();
 });
 
-app.on('activate', () => {
+app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
@@ -407,12 +452,12 @@ const remoteApiLegacy = {
   deleteCookies,
 };
 
-app.addListener('remote-require', (event, _webContents, moduleName) => {
-  if (moduleName === './index.js') {
+app.addListener("remote-require", (event, _webContents, moduleName) => {
+  if (moduleName === "./index.js") {
     // eslint-disable-next-line no-param-reassign
     event.returnValue = remoteApiLegacy;
   }
-  if (moduleName === './store.js') {
+  if (moduleName === "./store.js") {
     // eslint-disable-next-line no-param-reassign
     event.returnValue = store;
   }
