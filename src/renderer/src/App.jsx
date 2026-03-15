@@ -465,7 +465,7 @@ const App = memo(() => {
   );
 
   const [haveCookies, setHaveCookies] = useState(false);
-  const [dryRun, setDryRun] = useState(isDev);
+  const [dryRun, setDryRun] = useState(false);
   const [running, setRunning] = useState(false);
   const [advancedVisible, setAdvancedVisible] = useState(false);
   const [logsVisible, setLogsVisible] = useState(false);
