@@ -28,6 +28,7 @@ let instautoDb;
 let instauto;
 let instautoWindow;
 let logger = console;
+let myOwnUsername;
 
 let powerSaveBlockerId;
 
@@ -237,6 +238,7 @@ async function initInstauto({
   }
 
   logger = loggerArg;
+  myOwnUsername = username;
 
   powerSaveBlockerId = powerSaveBlocker.start("prevent-display-sleep");
 }
@@ -256,6 +258,7 @@ function cleanupInstauto() {
   instautoDb = undefined;
   instauto = undefined;
   logger = console;
+  myOwnUsername = undefined;
 }
 
 async function runBotNormalMode({
@@ -342,32 +345,44 @@ async function runBotFollowUserList({ users, limit, skipPrivate } = {}) {
 }
 
 async function runBotLikePhotosOnly({
-  usernames,
   maxLikesPerUser,
   maxUsersToVisit,
-  skipPrivate,
 } = {}) {
   assert(instauto);
+  assert(myOwnUsername);
 
-  try {
-    logger.log(
-      `Starting like photos only mode for ${usernames.length} accounts, visiting up to ${maxUsersToVisit} users...`,
-    );
+  logger.log("Fetching your following list...");
 
-    await instauto.followUsersFollowers({
-      usersToFollowFollowersOf: usernames,
-      maxFollowsTotal: maxUsersToVisit || 50,
-      skipPrivate,
-      enableLikeImages: true,
-      enableFollow: false,
-      likeImagesMax: maxLikesPerUser || 2,
-    });
+  const me = await instauto.navigateToUserAndGetData(myOwnUsername);
+  if (!me) throw new Error("Could not load own profile data");
 
-    logger.log("Done liking photos");
-  } catch (err) {
-    logger.error("Error in like photos only mode:", err);
-    throw err;
+  const following = await instauto.getFollowersOrFollowing({
+    userId: me.id,
+    getFollowers: false,
+  });
+  logger.log(`Found ${following.length} users you follow`);
+
+  const limit = maxUsersToVisit || 50;
+  const shuffled = [...following]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, limit);
+
+  logger.log(`Liking photos of up to ${shuffled.length} users...`);
+
+  for (const username of shuffled) {
+    try {
+      await instauto.likeUserImages({
+        username,
+        likeImagesMin: 1,
+        likeImagesMax: maxLikesPerUser || 2,
+      });
+      await instauto.sleep(5000);
+    } catch (err) {
+      logger.error(`Failed to like images for ${username}:`, err.message);
+    }
   }
+
+  logger.log("Done liking photos");
 }
 
 // for easier development testing
