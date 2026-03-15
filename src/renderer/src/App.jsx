@@ -738,6 +738,17 @@ const App = memo(() => {
 
   const onLikePhotosOnlyPress = useCallback(
     async () => {
+      if (dryRun) {
+        const { value } = await Swal.fire({
+          icon: 'warning',
+          title: 'Dry Run is enabled',
+          text: 'Dry Run mode is on — the bot will NOT actually like any photos. Uncheck "Dry Run" in Advanced Settings to perform real actions.',
+          showCancelButton: true,
+          confirmButtonText: 'Run anyway (simulation)',
+          cancelButtonText: 'Cancel',
+        });
+        if (!value) return;
+      }
       await startInstautoAction(async () => runBotLikePhotosOnly({
         usernames: cleanupAccounts(usersToFollowFollowersOf),
         maxLikesPerUser: advancedSettings.maxLikesPerUser || 2,
@@ -745,7 +756,7 @@ const App = memo(() => {
         skipPrivate,
       }));
     },
-    [advancedSettings.maxFollowsPerDay, advancedSettings.maxLikesPerUser, skipPrivate, startInstautoAction, usersToFollowFollowersOf],
+    [dryRun, advancedSettings.maxFollowsPerDay, advancedSettings.maxLikesPerUser, skipPrivate, startInstautoAction, usersToFollowFollowersOf],
   );
 
   const onRunTestCode = useCallback(async () => {
