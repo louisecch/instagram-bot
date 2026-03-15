@@ -306,15 +306,15 @@ async function runBotFollowUserList({ users, limit, skipPrivate } = {}) {
   await instauto.safelyFollowUserList({ users, limit, skipPrivate });
 }
 
-async function runBotLikePhotosOnly({ usernames, maxLikesPerUser, skipPrivate } = {}) {
+async function runBotLikePhotosOnly({ usernames, maxLikesPerUser, maxUsersToVisit, skipPrivate } = {}) {
   assert(instauto);
 
   try {
-    logger.log(`Starting like photos only mode for ${usernames.length} accounts...`);
+    logger.log(`Starting like photos only mode for ${usernames.length} accounts, visiting up to ${maxUsersToVisit} users...`);
 
     await instauto.followUsersFollowers({
       usersToFollowFollowersOf: usernames,
-      maxFollowsTotal: 0,
+      maxFollowsTotal: maxUsersToVisit || 50,
       skipPrivate,
       enableLikeImages: true,
       enableFollow: false,

@@ -741,10 +741,11 @@ const App = memo(() => {
       await startInstautoAction(async () => runBotLikePhotosOnly({
         usernames: cleanupAccounts(usersToFollowFollowersOf),
         maxLikesPerUser: advancedSettings.maxLikesPerUser || 2,
+        maxUsersToVisit: advancedSettings.maxFollowsPerDay || 50,
         skipPrivate,
       }));
     },
-    [advancedSettings.maxLikesPerUser, skipPrivate, startInstautoAction, usersToFollowFollowersOf],
+    [advancedSettings.maxFollowsPerDay, advancedSettings.maxLikesPerUser, skipPrivate, startInstautoAction, usersToFollowFollowersOf],
   );
 
   const onRunTestCode = useCallback(async () => {
