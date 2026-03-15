@@ -28,7 +28,6 @@ let instautoDb;
 let instauto;
 let instautoWindow;
 let logger = console;
-let myOwnUsername;
 
 let powerSaveBlockerId;
 
@@ -237,7 +236,6 @@ async function initInstauto({
   }
 
   logger = loggerArg;
-  myOwnUsername = username;
 
   powerSaveBlockerId = powerSaveBlocker.start('prevent-display-sleep');
 }
@@ -257,7 +255,6 @@ function cleanupInstauto() {
   instautoDb = undefined;
   instauto = undefined;
   logger = console;
-  myOwnUsername = undefined;
 }
 
 async function runBotNormalMode({
