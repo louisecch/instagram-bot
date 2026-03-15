@@ -57,7 +57,7 @@ function parseCliArgs() {
 
 const args = parseCliArgs();
 console.log('CLI arguments', args);
-const { root: customRootPath } = args;
+const { root: customRootPath, autoLike: autoLikeFlag = false } = args;
 
 if (customRootPath) {
   console.log('Using custom root', customRootPath);
@@ -446,6 +446,7 @@ const remoteApiLegacy = {
   cleanupInstauto,
   checkHaveCookies,
   deleteCookies,
+  autoLikeFlag,
 };
 
 app.addListener('remote-require', (event, _webContents, moduleName) => {

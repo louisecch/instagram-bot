@@ -54,6 +54,7 @@ const {
   deleteCookies,
   getInstautoData,
   runTestCode,
+  autoLikeFlag,
 } = electron.require('./index.js');
 const { store: configStore, defaults: configDefaults } = electron.require('./store.js');
 
@@ -762,6 +763,14 @@ const App = memo(() => {
     startInstautoAction,
     usersToFollowFollowersOf,
   ]);
+
+  const autoLikeTriggered = useRef(false);
+  useEffect(() => {
+    if (autoLikeFlag && isLoggedIn && !running && !autoLikeTriggered.current) {
+      autoLikeTriggered.current = true;
+      onLikePhotosOnlyPress();
+    }
+  }, [autoLikeFlag, isLoggedIn, onLikePhotosOnlyPress, running]);
 
   const onRunTestCode = useCallback(async () => {
     await startInstautoAction(async () => runTestCode());
