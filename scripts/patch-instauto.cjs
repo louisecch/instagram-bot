@@ -8,8 +8,8 @@
  * Fix 2: Add a 2-second wait before scanning for post links so Instagram's
  *         SPA has time to render the post grid after navigation.
  */
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const filePath = path.join(__dirname, '..', 'node_modules', 'instauto', 'dist', 'index.js');
 let src = fs.readFileSync(filePath, 'utf8');
@@ -42,7 +42,7 @@ if (src.includes(oldSelector)) {
 }
 
 // Fix 2 — 2-second sleep + link count log before scanning post links
-const oldScan = `const allImages = [...document.getElementsByTagName('a')].filter((el) => typeof el.href === 'string' && /instagram.com\\/p\\//.test(el.href));`;
+const oldScan = String.raw`const allImages = [...document.getElementsByTagName('a')].filter((el) => typeof el.href === 'string' && /instagram.com\/p\//.test(el.href));`;
 const newScan = `await window.instautoSleep(2000);
         const allImages = [...document.getElementsByTagName('a')].filter((el) => typeof el.href === 'string' && /instagram\\.com\\/[^/]+\\/p\\//.test(el.href));
         window.instautoLog(\`Found \${allImages.length} post link(s) on profile\`);`;

@@ -60,7 +60,9 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-unicorn": "56.0.1",
     "evergreen-ui": "^6.13.3",
+    "husky": "^9.1.7",
     "json5": "^2.2.3",
+    "lint-staged": "^15.5.1",
     "mkdirp": "^1.0.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -70,9 +72,7 @@
     "sweetalert2": "^11.26.21",
     "sweetalert2-react-content": "^5.1.1",
     "typescript": "~5.9.3",
-    "vite": "^7.3.1",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.1"
+    "vite": "^7.3.1"
   },
   "lint-staged": {
     "*.{js,jsx,cjs}": "eslint --fix"
