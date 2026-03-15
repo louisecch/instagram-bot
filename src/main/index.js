@@ -150,7 +150,7 @@ async function initInstauto({
 
   // Get the session for this partition
   const { session } = instautoWindow.webContents;
-  
+
   console.log('Session partition:', session.partition);
   console.log('Cookies path:', cookiesPath);
 
@@ -191,7 +191,7 @@ async function initInstauto({
   mainWindow.focus();
 
   instauto = Instauto(instautoDb, page, options);
-  
+
   try {
     await instauto.init();
   } catch (err) {
@@ -199,7 +199,7 @@ async function initInstauto({
     loggerArg.error('This may be due to network interception issues with persistent sessions.');
     throw err;
   }
-  
+
   logger = loggerArg;
 
   powerSaveBlockerId = powerSaveBlocker.start('prevent-display-sleep');
