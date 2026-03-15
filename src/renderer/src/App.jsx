@@ -749,7 +749,7 @@ const App = memo(() => {
       if (!value) return;
     }
     await startInstautoAction(async () => runBotLikePhotosOnly({
-      maxLikesPerUser: advancedSettings.maxLikesPerUser || 2,
+      maxLikesPerUser: advancedSettings.maxLikesPerUser || 3,
       maxUsersToVisit: advancedSettings.maxFollowsPerDay || 50,
     }));
   }, [

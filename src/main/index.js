@@ -372,8 +372,8 @@ async function runBotLikePhotosOnly({
     try {
       await instauto.likeUserImages({
         username,
-        likeImagesMin: 1,
-        likeImagesMax: maxLikesPerUser || 2,
+        likeImagesMin: maxLikesPerUser || 3,
+        likeImagesMax: maxLikesPerUser || 3,
       });
       await instauto.sleep(5000);
     } catch (err) {
